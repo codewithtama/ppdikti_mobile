@@ -1,0 +1,50 @@
+name: pddikti_mobile
+description: "PDDikti Mobile Client"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  dio: ^5.11.1
+  go_router: ^17.5.0
+  intl: ^0.20.3
+  url_launcher: ^6.3.3
+  path_provider: ^2.1.6
+  cached_network_image: ^3.4.1
+  flutter_widget_from_html_core: ^0.17.4
+  html: ^0.15.7
+  phosphor_flutter: ^2.1.0
+  collection: ^1.19.1
+  encrypt: ^5.0.3
+  webview_flutter: ^4.14.1
+  package_info_plus: ^10.2.2
+  open_filex: ^5.0.0
+  crypto: ^3.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/alias.json
+    - assets/data/locations.json
+    - assets/data/beranda.json
+    - assets/data/announcements.json
+    - assets/data/publications.json
+    - assets/data/sample_pencarian.json
+    - assets/data/peta_indonesia.json
+  fonts:
+    - family: Archivo
+      fonts:
+        - asset: assets/fonts/Archivo-Variable.ttf
+    - family: SourceSerif4
+      fonts:
+        - asset: assets/fonts/SourceSerif4-Variable.ttf

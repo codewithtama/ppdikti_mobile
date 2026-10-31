@@ -1,0 +1,489 @@
+{
+  "mahasiswa": [
+    {
+      "id": "MHS001",
+      "nama": "Budi Santoso",
+      "nim": "13520001",
+      "nama_pt": "Institut Teknologi Bandung",
+      "singkatan_pt": "ITB",
+      "nama_prodi": "Teknik Informatika",
+      "status": "Aktif",
+      "jenjang": "S1",
+      "tahun_masuk": "2020",
+      "jenis_kelamin": "Laki-laki",
+      "tempat_lahir": "Bandung",
+      "tanggal_lahir": "15 Maret 2002",
+      "riwayat_status_kuliah": [
+        {
+          "semester": "2020/2021 Ganjil",
+          "status": "Aktif",
+          "sks": 18
+        },
+        {
+          "semester": "2020/2021 Genap",
+          "status": "Aktif",
+          "sks": 20
+        },
+        {
+          "semester": "2021/2022 Ganjil",
+          "status": "Aktif",
+          "sks": 22
+        },
+        {
+          "semester": "2021/2022 Genap",
+          "status": "Aktif",
+          "sks": 21
+        },
+        {
+          "semester": "2022/2023 Ganjil",
+          "status": "Aktif",
+          "sks": 20
+        },
+        {
+          "semester": "2022/2023 Genap",
+          "status": "Aktif",
+          "sks": 22
+        },
+        {
+          "semester": "2023/2024 Ganjil",
+          "status": "Aktif",
+          "sks": 18
+        },
+        {
+          "semester": "2023/2024 Genap",
+          "status": "Lulus",
+          "sks": 6
+        }
+      ]
+    },
+    {
+      "id": "MHS002",
+      "nama": "Budi Pratama",
+      "nim": "2106720011",
+      "nama_pt": "Universitas Indonesia",
+      "singkatan_pt": "UI",
+      "nama_prodi": "Ilmu Komputer",
+      "status": "Aktif",
+      "jenjang": "S1",
+      "tahun_masuk": "2021",
+      "jenis_kelamin": "Laki-laki",
+      "tempat_lahir": "Jakarta",
+      "tanggal_lahir": "10 Agustus 2003",
+      "riwayat_status_kuliah": [
+        {
+          "semester": "2021/2022 Ganjil",
+          "status": "Aktif",
+          "sks": 19
+        },
+        {
+          "semester": "2021/2022 Genap",
+          "status": "Aktif",
+          "sks": 21
+        },
+        {
+          "semester": "2022/2023 Ganjil",
+          "status": "Aktif",
+          "sks": 20
+        },
+        {
+          "semester": "2022/2023 Genap",
+          "status": "Aktif",
+          "sks": 22
+        }
+      ]
+    },
+    {
+      "id": "MHS003",
+      "nama": "Siti Nurhaliza",
+      "nim": "19/443210/TK/49012",
+      "nama_pt": "Universitas Gadjah Mada",
+      "singkatan_pt": "UGM",
+      "nama_prodi": "Teknologi Informasi",
+      "status": "Lulus",
+      "jenjang": "S1",
+      "tahun_masuk": "2019",
+      "jenis_kelamin": "Perempuan",
+      "tempat_lahir": "Yogyakarta",
+      "tanggal_lahir": "02 Februari 2001",
+      "riwayat_status_kuliah": [
+        {
+          "semester": "2019/2020 Ganjil",
+          "status": "Aktif",
+          "sks": 19
+        },
+        {
+          "semester": "2019/2020 Genap",
+          "status": "Aktif",
+          "sks": 20
+        },
+        {
+          "semester": "2020/2021 Ganjil",
+          "status": "Aktif",
+          "sks": 22
+        },
+        {
+          "semester": "2020/2021 Genap",
+          "status": "Aktif",
+          "sks": 21
+        },
+        {
+          "semester": "2021/2022 Ganjil",
+          "status": "Aktif",
+          "sks": 20
+        },
+        {
+          "semester": "2021/2022 Genap",
+          "status": "Aktif",
+          "sks": 22
+        },
+        {
+          "semester": "2022/2023 Ganjil",
+          "status": "Lulus",
+          "sks": 14
+        }
+      ]
+    },
+    {
+      "id": "MHS004",
+      "nama": "Ahmad Rizky Fauzi",
+      "nim": "202010370311050",
+      "nama_pt": "Universitas Muhammadiyah Malang",
+      "singkatan_pt": "UMM",
+      "nama_prodi": "Informatika",
+      "status": "Aktif",
+      "jenjang": "S1",
+      "tahun_masuk": "2020",
+      "jenis_kelamin": "Laki-laki",
+      "tempat_lahir": "Malang",
+      "tanggal_lahir": "14 Juli 2002"
+    },
+    {
+      "id": "MHS005",
+      "nama": "Putri Ayu Lestari",
+      "nim": "120140023",
+      "nama_pt": "Institut Teknologi Sumatera",
+      "singkatan_pt": "ITERA",
+      "nama_prodi": "Teknik Informatika",
+      "status": "Aktif",
+      "jenjang": "S1",
+      "tahun_masuk": "2020",
+      "jenis_kelamin": "Perempuan",
+      "tempat_lahir": "Bandar Lampung",
+      "tanggal_lahir": "25 Desember 2001"
+    },
+    {
+      "id": "MHS006",
+      "nama": "Ilham Riski Wibowo",
+      "nim": "1810511045",
+      "nama_pt": "Universitas Pembangunan Nasional Veteran Jakarta",
+      "singkatan_pt": "UPNVJ",
+      "nama_prodi": "Informatika",
+      "status": "Lulus",
+      "jenjang": "S1",
+      "tahun_masuk": "2018",
+      "jenis_kelamin": "Laki-laki",
+      "tempat_lahir": "Jakarta",
+      "tanggal_lahir": "11 Mei 2000"
+    },
+    {
+      "id": "MHS007",
+      "nama": "Dewi Sartika",
+      "nim": "140810210034",
+      "nama_pt": "Universitas Padjadjaran",
+      "singkatan_pt": "UNPAD",
+      "nama_prodi": "Teknik Informatika",
+      "status": "Aktif",
+      "jenjang": "S1",
+      "tahun_masuk": "2021",
+      "jenis_kelamin": "Perempuan",
+      "tempat_lahir": "Sumedang",
+      "tanggal_lahir": "08 April 2003"
+    },
+    {
+      "id": "MHS008",
+      "nama": "Andi Wijaya",
+      "nim": "24060120130089",
+      "nama_pt": "Universitas Diponegoro",
+      "singkatan_pt": "UNDIP",
+      "nama_prodi": "Informatika",
+      "status": "Aktif",
+      "jenjang": "S1",
+      "tahun_masuk": "2020",
+      "jenis_kelamin": "Laki-laki",
+      "tempat_lahir": "Semarang",
+      "tanggal_lahir": "19 Juni 2002"
+    },
+    {
+      "id": "MHS009",
+      "nama": "Muhammad Fajar",
+      "nim": "082011633012",
+      "nama_pt": "Universitas Airlangga",
+      "singkatan_pt": "UNAIR",
+      "nama_prodi": "Sistem Informasi",
+      "status": "Aktif",
+      "jenjang": "S1",
+      "tahun_masuk": "2020",
+      "jenis_kelamin": "Laki-laki",
+      "tempat_lahir": "Surabaya",
+      "tanggal_lahir": "01 Januari 2002"
+    },
+    {
+      "id": "MHS010",
+      "nama": "Jessica Tan",
+      "nim": "2440012345",
+      "nama_pt": "Universitas Bina Nusantara",
+      "singkatan_pt": "BINUS",
+      "nama_prodi": "Computer Science",
+      "status": "Aktif",
+      "jenjang": "S1",
+      "tahun_masuk": "2021",
+      "jenis_kelamin": "Perempuan",
+      "tempat_lahir": "Jakarta",
+      "tanggal_lahir": "12 November 2003"
+    },
+    {
+      "id": "MHS011",
+      "nama": "Ahmad Dani",
+      "nim": "201011400234",
+      "nama_pt": "Universitas Pamulang",
+      "singkatan_pt": "UNPAM",
+      "nama_prodi": "Teknik Informatika",
+      "status": "Aktif",
+      "jenjang": "S1",
+      "tahun_masuk": "2020",
+      "jenis_kelamin": "Laki-laki",
+      "tempat_lahir": "Tangerang Selatan",
+      "tanggal_lahir": "18 Mei 2001"
+    },
+    {
+      "id": "MHS012",
+      "nama": "Kevin Sanjaya",
+      "nim": "1301204055",
+      "nama_pt": "Telkom University",
+      "singkatan_pt": "TEL-U",
+      "nama_prodi": "Informatika",
+      "status": "Lulus",
+      "jenjang": "S1",
+      "tahun_masuk": "2020",
+      "jenis_kelamin": "Laki-laki",
+      "tempat_lahir": "Bandung",
+      "tanggal_lahir": "02 Agustus 2002"
+    }
+  ],
+  "dosen": [
+    {
+      "id": "DSN001",
+      "nama": "Prof. Dr. Ir. Budi Santoso, M.Sc.",
+      "nidn": "0012056801",
+      "nama_pt": "Institut Teknologi Bandung",
+      "singkatan_pt": "ITB",
+      "nama_prodi": "Teknik Informatika",
+      "status": "Aktif",
+      "jabatan_akademik": "Guru Besar",
+      "pendidikan_tertinggi": "S3 Doktor",
+      "jenis_kelamin": "Laki-laki",
+      "status_ikatan_kerja": "Dosen Tetap",
+      "riwayat_pendidikan": [
+        {
+          "jenjang": "S1",
+          "nama_pt": "Institut Teknologi Bandung",
+          "bidang_studi": "Teknik Informatika",
+          "tahun_lulus": "1992"
+        },
+        {
+          "jenjang": "S2",
+          "nama_pt": "Carnegie Mellon University",
+          "bidang_studi": "Computer Science",
+          "tahun_lulus": "1996"
+        },
+        {
+          "jenjang": "S3",
+          "nama_pt": "University of Tokyo",
+          "bidang_studi": "Information Science",
+          "tahun_lulus": "2001"
+        }
+      ],
+      "riwayat_mengajar": [
+        {
+          "semester": "2023/2024 Ganjil",
+          "nama_matkul": "Kecerdasan Artifisial Lanjut",
+          "kelas": "01",
+          "nama_pt": "ITB"
+        },
+        {
+          "semester": "2023/2024 Genap",
+          "nama_matkul": "Algoritma & Struktur Data",
+          "kelas": "02",
+          "nama_pt": "ITB"
+        }
+      ]
+    },
+    {
+      "id": "DSN002",
+      "nama": "Dr. Eng. Ahmad Hidayat, S.T., M.T.",
+      "nidn": "0025097503",
+      "nama_pt": "Universitas Gadjah Mada",
+      "singkatan_pt": "UGM",
+      "nama_prodi": "Teknologi Informasi",
+      "status": "Aktif",
+      "jabatan_akademik": "Lektor Kepala",
+      "pendidikan_tertinggi": "S3 Doktor",
+      "jenis_kelamin": "Laki-laki",
+      "status_ikatan_kerja": "Dosen Tetap"
+    },
+    {
+      "id": "DSN003",
+      "nama": "Dr. Siti Aminah, S.Kom., M.Kom.",
+      "nidn": "0412038201",
+      "nama_pt": "Universitas Indonesia",
+      "singkatan_pt": "UI",
+      "nama_prodi": "Sistem Informasi",
+      "status": "Aktif",
+      "jabatan_akademik": "Lektor",
+      "pendidikan_tertinggi": "S3 Doktor",
+      "jenis_kelamin": "Perempuan",
+      "status_ikatan_kerja": "Dosen Tetap"
+    },
+    {
+      "id": "DSN004",
+      "nama": "Dian Kurniawan, S.T., M.Kom.",
+      "nidn": "0405068902",
+      "nama_pt": "Universitas Pamulang",
+      "singkatan_pt": "UNPAM",
+      "nama_prodi": "Teknik Informatika",
+      "status": "Aktif",
+      "jabatan_akademik": "Asisten Ahli",
+      "pendidikan_tertinggi": "S2 Magister",
+      "jenis_kelamin": "Laki-laki",
+      "status_ikatan_kerja": "Dosen Tetap"
+    },
+    {
+      "id": "DSN005",
+      "nama": "Prof. Dr. Sri Wahyuni, M.Si.",
+      "nidn": "0018116502",
+      "nama_pt": "Universitas Airlangga",
+      "singkatan_pt": "UNAIR",
+      "nama_prodi": "Kedokteran",
+      "status": "Aktif",
+      "jabatan_akademik": "Guru Besar",
+      "pendidikan_tertinggi": "S3 Doktor",
+      "jenis_kelamin": "Perempuan",
+      "status_ikatan_kerja": "Dosen Tetap"
+    },
+    {
+      "id": "DSN006",
+      "nama": "Dr. Hendra Wijaya, S.Kom., M.T.",
+      "nidn": "0314088001",
+      "nama_pt": "Universitas Bina Nusantara",
+      "singkatan_pt": "BINUS",
+      "nama_prodi": "Computer Science",
+      "status": "Aktif",
+      "jabatan_akademik": "Lektor",
+      "pendidikan_tertinggi": "S3 Doktor",
+      "jenis_kelamin": "Laki-laki",
+      "status_ikatan_kerja": "Dosen Tetap"
+    }
+  ],
+  "prodi": [
+    {
+      "id": "PRD001",
+      "nama": "Teknik Informatika",
+      "jenjang": "S1",
+      "pt": "Institut Teknologi Bandung",
+      "pt_singkat": "ITB",
+      "akreditasi": "Unggul",
+      "status": "Aktif",
+      "rasio_dosen_mahasiswa": "1 : 18"
+    },
+    {
+      "id": "PRD002",
+      "nama": "Ilmu Komputer",
+      "jenjang": "S1",
+      "pt": "Universitas Indonesia",
+      "pt_singkat": "UI",
+      "akreditasi": "Unggul",
+      "status": "Aktif",
+      "rasio_dosen_mahasiswa": "1 : 20"
+    },
+    {
+      "id": "PRD003",
+      "nama": "Teknologi Informasi",
+      "jenjang": "S1",
+      "pt": "Universitas Gadjah Mada",
+      "pt_singkat": "UGM",
+      "akreditasi": "Unggul",
+      "status": "Aktif",
+      "rasio_dosen_mahasiswa": "1 : 19"
+    },
+    {
+      "id": "PRD004",
+      "nama": "Sistem Informasi",
+      "jenjang": "S1",
+      "pt": "Universitas Airlangga",
+      "pt_singkat": "UNAIR",
+      "akreditasi": "A",
+      "status": "Aktif",
+      "rasio_dosen_mahasiswa": "1 : 24"
+    },
+    {
+      "id": "PRD005",
+      "nama": "Teknik Informatika",
+      "jenjang": "S1",
+      "pt": "Universitas Pamulang",
+      "pt_singkat": "UNPAM",
+      "akreditasi": "Baik Sekali",
+      "status": "Aktif",
+      "rasio_dosen_mahasiswa": "1 : 32"
+    },
+    {
+      "id": "PRD006",
+      "nama": "Ilmu Hukum",
+      "jenjang": "S1",
+      "pt": "Universitas Padjadjaran",
+      "pt_singkat": "UNPAD",
+      "akreditasi": "Unggul",
+      "status": "Aktif",
+      "rasio_dosen_mahasiswa": "1 : 25"
+    },
+    {
+      "id": "PRD007",
+      "nama": "Manajemen",
+      "jenjang": "S1",
+      "pt": "Universitas Diponegoro",
+      "pt_singkat": "UNDIP",
+      "akreditasi": "Unggul",
+      "status": "Aktif",
+      "rasio_dosen_mahasiswa": "1 : 28"
+    },
+    {
+      "id": "PRD008",
+      "nama": "Kedokteran",
+      "jenjang": "S1",
+      "pt": "Universitas Airlangga",
+      "pt_singkat": "UNAIR",
+      "akreditasi": "Unggul",
+      "status": "Aktif",
+      "rasio_dosen_mahasiswa": "1 : 8"
+    },
+    {
+      "id": "PRD009",
+      "nama": "Akuntansi",
+      "jenjang": "S1",
+      "pt": "Universitas Brawijaya",
+      "pt_singkat": "UB",
+      "akreditasi": "Unggul",
+      "status": "Aktif",
+      "rasio_dosen_mahasiswa": "1 : 26"
+    },
+    {
+      "id": "PRD010",
+      "nama": "Teknik Elektro",
+      "jenjang": "S1",
+      "pt": "Institut Teknologi Sepuluh Nopember",
+      "pt_singkat": "ITS",
+      "akreditasi": "Unggul",
+      "status": "Aktif",
+      "rasio_dosen_mahasiswa": "1 : 16"
+    }
+  ]
+}

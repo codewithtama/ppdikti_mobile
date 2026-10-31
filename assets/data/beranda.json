@@ -1,0 +1,113 @@
+{
+    "status":  "success",
+    "data":  {
+                 "dosen":  {
+                               "jumlah_dosen":  303067
+                           },
+                 "mahasiswa":  {
+                                   "jumlah_mahasiswa":  9967487
+                               },
+                 "prodi":  {
+                               "jumlah":  33741
+                           },
+                 "pt":  {
+                            "jumlah":  4416
+                        },
+                 "bidang_ilmu":  [
+                                     {
+                                         "bidang_ilmu":  "Ekonomi",
+                                         "total_mahasiswa":  8908902,
+                                         "persentase_kelulusan":  "52,88"
+                                     },
+                                     {
+                                         "bidang_ilmu":  "Kesehatan",
+                                         "total_mahasiswa":  5149315,
+                                         "persentase_kelulusan":  "69,60"
+                                     },
+                                     {
+                                         "bidang_ilmu":  "Agama",
+                                         "total_mahasiswa":  1009969,
+                                         "persentase_kelulusan":  "47,50"
+                                     },
+                                     {
+                                         "bidang_ilmu":  "MIPA",
+                                         "total_mahasiswa":  1335775,
+                                         "persentase_kelulusan":  "61,15"
+                                     },
+                                     {
+                                         "bidang_ilmu":  "Seni",
+                                         "total_mahasiswa":  411458,
+                                         "persentase_kelulusan":  "47,14"
+                                     },
+                                     {
+                                         "bidang_ilmu":  "Humaniora",
+                                         "total_mahasiswa":  967246,
+                                         "persentase_kelulusan":  "52,96"
+                                     },
+                                     {
+                                         "bidang_ilmu":  "Pendidikan",
+                                         "total_mahasiswa":  12188570,
+                                         "persentase_kelulusan":  "60,78"
+                                     },
+                                     {
+                                         "bidang_ilmu":  "Sosial",
+                                         "total_mahasiswa":  7601778,
+                                         "persentase_kelulusan":  "48,64"
+                                     },
+                                     {
+                                         "bidang_ilmu":  "Pertanian",
+                                         "total_mahasiswa":  1948590,
+                                         "persentase_kelulusan":  "53,69"
+                                     },
+                                     {
+                                         "bidang_ilmu":  "Teknik",
+                                         "total_mahasiswa":  7990889,
+                                         "persentase_kelulusan":  "50,98"
+                                     }
+                                 ],
+                 "publications":  [
+                                      {
+                                          "id":  "P5wkp3NbO4Zg7LtBOWG0y9j5QO2F5zdpK76dn9Ed6HagVyyl4ZuefRCqbB4g5Rz8NmrnJQ==",
+                                          "title":  "Statistik Pendidikan Tinggi Tahun 2025",
+                                          "thumbnail":  "/publication/1778261648-STATISTIK_DIKTI_WEBPDDIKTI.jpeg",
+                                          "link":  "https://drive.google.com/drive/folders/1kkhO15sO2tTROjpC5ORJqmjLClsr0MNM?usp=sharing",
+                                          "created_at":  "2026-03-30T07:00:00+07:00"
+                                      },
+                                      {
+                                          "id":  "paMSek5zTd9JoAdwT03FWac5kFSCTF-7bf8A6sBQJEEV2OpohFOP3fir1nWukLSdFpgBDg==",
+                                          "title":  "Statistik Pendidikan Tinggi Tahun 2024",
+                                          "thumbnail":  "/publication/cover_buku_statistik_2024.webp",
+                                          "link":  "https://drive.google.com/file/d/1RcIDvDRs1VNcNAvPCOHeBxBzY3NgXizN/view?usp=sharing",
+                                          "created_at":  "2025-10-31T09:52:52.879475+07:00"
+                                      },
+                                      {
+                                          "id":  "YL_XlHJWLMk0eklY8GwDNIJ8CyhoJdbUavpXedSmvfvXiN1LJPg4mBIKQcNVyanXCW-LGw==",
+                                          "title":  "Statistik Pendidikan Tinggi Tahun 2023",
+                                          "thumbnail":  "/publication/1740365572-statistik_2023.22670abb2904b08c4197.webp",
+                                          "link":  "https://www.dropbox.com/scl/fi/ggqgfem9h8xkvacfszu3a/BUKU-STATISTIK-PENDIDIKAN-TINGGI-2023.pdf?rlkey=hw3mqz5gq9hmt5jslqh8axprt\u0026st=sgpuxsip\u0026dl=0",
+                                          "created_at":  "2025-02-24T09:52:52.879475+07:00"
+                                      },
+                                      {
+                                          "id":  "AM0EwWY0xAA7TMRF7n6RcxKPtolLCX5fAhsXd2Z6jerolrtZqY0QHweaa2fsGwQ4mfZjIw==",
+                                          "title":  "Statistik Pendidikan Tinggi Tahun 2022",
+                                          "thumbnail":  "/publication/1740365478-statistik_2022.f2158b95e2ae34c3dc05.webp",
+                                          "link":  "https://www.dropbox.com/scl/fi/or24gc1noif1wqb0hj1p1/Buku-Statistik-Pendidikan-Tinggi-2022.pdf?rlkey=bt787paskfgg47bny8oiwp9es\u0026dl=0",
+                                          "created_at":  "2025-02-24T09:51:18.951268+07:00"
+                                      }
+                                  ],
+                 "activities":  [
+                                    {
+                                        "id":  "KWDRzifyWVLQMLQcMJP3yGPrI1C3QYNpr6vMI5Yan5FKUrEI91ePCb9s7xUvPDBV5kPpQw==",
+                                        "title":  "Pangkalan Data Pendidikan Tinggi Mengucapkan Selamat kepada pemenang Anugerah PDDikti 2023",
+                                        "slug":  "pangkalan-data-pendidikan-tinggi-mengucapkan-selamat-kepada-pemenang-anugerah-pddikti-2023-9lipx",
+                                        "description":  "\u003cp\u003e\u003ca href=\"https://www.instagram.com/p/C01z3juPsbd/?igsh=N2RjNmh1OXIwbG5z\" target=\"_blank\"\u003e⭐Pangkalan Data Pendidikan Tinggi Mengucapkan Selamat kepada pemenang Anugerah PDDikti 2023!⭐\u003cbr\u003e\u003cbr\u003ePrestasi ini adalah hasil dari dedikasi dan kerja keras yang luar biasa. Terima kasih atas kinerja, inovasi, dan kontribusi #SobatPDDikti dan unit kerja yang membidangi pelaporan PDDikti di Perguruan Tinggi Negeri Akademik dan Lembaga Layanan Pendidikan Tinggi dalam meningkatkan kualitas pendidikan tinggi yang bermutu!\u003cbr\u003e\u003cbr\u003eSemoga prestasi ini tidak hanya memotivasi, tetapi juga memberikan dampak positif yang signifikan bagi perkembangan pelaporan data pendidikan tinggi di tanah air.\u003cbr\u003e\u003cbr\u003eTetap semangat bagi #SobatPDDikti yang belum berkesempatan mendapatkan Anugerah Diktiristek tahun 2023.\u003cbr\u003e\u003cbr\u003eSalam Satu Data!\u003cbr\u003e\u003cbr\u003e#AnugerahDiktiristek\u003cbr\u003e#SalamSatuData\u003cbr\u003e#DitjenDiktiristek\u003cbr\u003e#PDDikti\u003cbr\u003e#DiktiSIGAPMelayani\u003c/a\u003e\u003c/p\u003e",
+                                        "images":  [
+                                                       {
+                                                           "path":  "/activity/1740365825-Pemenang_ADR.04d3ea57cee090aeed4f.webp"
+                                                       }
+                                                   ],
+                                        "created_at":  "2025-02-24T09:57:05.502427+07:00"
+                                    }
+                                ]
+             }
+}

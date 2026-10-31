@@ -1,0 +1,8 @@
+# Template konfigurasi signing release Android
+# Salin berkas ini ke android/key.properties dan sesuaikan nilainya
+# Catatan: android/key.properties sudah dimasukkan ke .gitignore sehingga aman dari kebocoran
+
+storePassword=password_keystore_anda
+keyPassword=password_key_anda
+keyAlias=pddikti_release
+storeFile=../upload-keystore.jks

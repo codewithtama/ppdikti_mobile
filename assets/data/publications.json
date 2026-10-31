@@ -1,0 +1,54 @@
+{
+    "status":  "success",
+    "message":  "Publications fetched successfully",
+    "data":  [
+                 {
+                     "id":  "gkMDwjmLJg5FsMV7VlYcTooQhWeQLoaQEXDsJFraG1LHRY-gwpQdwUVg59QgvV6td9f5cg==",
+                     "title":  "Statistik Pendidikan Tinggi Tahun 2025",
+                     "thumbnail":  "/publication/1778261648-STATISTIK_DIKTI_WEBPDDIKTI.jpeg",
+                     "link":  "https://drive.google.com/drive/folders/1kkhO15sO2tTROjpC5ORJqmjLClsr0MNM?usp=sharing",
+                     "created_at":  "2026-03-30T07:00:00+07:00"
+                 },
+                 {
+                     "id":  "Hom1-fRVfEDKbcIucRhdTfBugb2ZLFbm65awNOrqB8G1jNgXKk3JXUz1zmBuMFEbbCwkZw==",
+                     "title":  "Statistik Pendidikan Tinggi Tahun 2024",
+                     "thumbnail":  "/publication/cover_buku_statistik_2024.webp",
+                     "link":  "https://drive.google.com/file/d/1RcIDvDRs1VNcNAvPCOHeBxBzY3NgXizN/view?usp=sharing",
+                     "created_at":  "2025-10-31T09:52:52.879475+07:00"
+                 },
+                 {
+                     "id":  "0FDsCXtetjti5qGM2fmXrMOM4RRmtQ-gpblBqz03ZzRWbbSw4zlGYuM1t7-_cpFnTkxqwA==",
+                     "title":  "Statistik Pendidikan Tinggi Tahun 2023",
+                     "thumbnail":  "/publication/1740365572-statistik_2023.22670abb2904b08c4197.webp",
+                     "link":  "https://www.dropbox.com/scl/fi/ggqgfem9h8xkvacfszu3a/BUKU-STATISTIK-PENDIDIKAN-TINGGI-2023.pdf?rlkey=hw3mqz5gq9hmt5jslqh8axprt\u0026st=sgpuxsip\u0026dl=0",
+                     "created_at":  "2025-02-24T09:52:52.879475+07:00"
+                 },
+                 {
+                     "id":  "iB9q5zKV6Hr2LqHZYPYfSUPwJ3_4PhtbRPkZV0ydsCgaFVohr3UPUUAAdOGkxGn71zGHHg==",
+                     "title":  "Statistik Pendidikan Tinggi Tahun 2022",
+                     "thumbnail":  "/publication/1740365478-statistik_2022.f2158b95e2ae34c3dc05.webp",
+                     "link":  "https://www.dropbox.com/scl/fi/or24gc1noif1wqb0hj1p1/Buku-Statistik-Pendidikan-Tinggi-2022.pdf?rlkey=bt787paskfgg47bny8oiwp9es\u0026dl=0",
+                     "created_at":  "2025-02-24T09:51:18.951268+07:00"
+                 },
+                 {
+                     "id":  "jGw5W0f5IWF2z95w3rfIeaNfpnZd7GKqPOFj2jMXSFqd_1h4qM1oCaE8TlZShp8IXyWZTg==",
+                     "title":  "Statistik Pendidikan Tinggi Tahun 2021",
+                     "thumbnail":  "/publication/1740365236-statistik_2021.7060a2fe46e60ee03f35.webp",
+                     "link":  "https://www.dropbox.com/scl/fi/00u8uf3on20kel4qedkp5/Statistik-Pendidikan-Tinggi-2021-Final.pdf?rlkey=32dwwnpo4ypz7c1a0hnw0qvig\u0026dl=0",
+                     "created_at":  "2025-02-24T09:47:16.233787+07:00"
+                 },
+                 {
+                     "id":  "2LakzfLUhJqX8Xys4Y-646Wt74HWZNcNI6tbag7scL5qghNSOksGqvzEVGQd5rw343-PnQ==",
+                     "title":  "Statistik Pendidikan Tinggi Tahun 2020",
+                     "thumbnail":  "/publication/1740364852-statistik_2020.247d447f3eae56ef2b23.webp",
+                     "link":  "https://www.dropbox.com/scl/fi/9u6ucaldwhgruyzwv2jt8/Statistik-Pendidikan-Tinggi-2020.pdf?rlkey=5tiqgk2bonaodhoecjsaibtw1\u0026dl=0",
+                     "created_at":  "2025-02-24T09:40:52.947545+07:00"
+                 }
+             ],
+    "pagination":  {
+                       "page":  1,
+                       "page_size":  6,
+                       "total_page":  1,
+                       "total_items":  6
+                   }
+}
