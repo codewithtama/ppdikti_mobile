@@ -8,6 +8,7 @@ import 'fitur/beranda/peta/peta_penuh_layar.dart';
 import 'fitur/kabar/kabar_layar.dart';
 import 'fitur/kampus/detail_layar.dart';
 import 'fitur/kampus/kampus_layar.dart';
+import 'fitur/ketentuan/ketentuan_layar.dart';
 import 'fitur/pencarian/detail_dosen_layar.dart';
 import 'fitur/pencarian/detail_mahasiswa_layar.dart';
 import 'fitur/pencarian/detail_prodi_layar.dart';
@@ -15,11 +16,16 @@ import 'fitur/tentang/tentang_layar.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-GoRouter buatRouter() {
+GoRouter buatRouter({bool sudahSetuju = false}) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/beranda',
+    initialLocation: sudahSetuju ? '/beranda' : '/ketentuan',
     routes: [
+      GoRoute(
+        path: '/ketentuan',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const KetentuanLayar(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return _ScaffoldDenganNavigasi(navigationShell: navigationShell);

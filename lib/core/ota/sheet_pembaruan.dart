@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../izin/layanan_izin_android.dart';
 import '../theme/tokens.dart';
 import 'layanan_pembaruan.dart';
 import 'model_pembaruan.dart';
@@ -55,6 +57,43 @@ class _SheetPembaruanState extends State<SheetPembaruan> {
   }
 
   Future<void> _mulaiUnduhDanPasang() async {
+    if (Platform.isAndroid) {
+      final sudahBisa = await LayananIzinAndroid.bisaInstallPaket();
+      if (!sudahBisa) {
+        if (!mounted) return;
+        await showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: Warna.tintaAngkat,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: Warna.garis, width: 1),
+            ),
+            title: const Text('Izin Pembaruan Diperlukan', style: TextStyle(color: Warna.kapur)),
+            content: const Text(
+              'Aktifkan opsi "Izinkan dari sumber ini" di pengaturan sistem agar sistem Android dapat memasang pembaruan APK secara otomatis.',
+              style: TextStyle(color: Warna.kapurRedup),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Batal', style: TextStyle(color: Warna.kapurRedup)),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: Warna.kunyit),
+                onPressed: () async {
+                  Navigator.of(ctx).pop();
+                  await LayananIzinAndroid.bukaPengaturanInstallPaket();
+                },
+                child: const Text('Buka Pengaturan', style: TextStyle(color: Warna.tinta, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+    }
+
     setState(() {
       _sedangMengunduh = true;
       _progres = 0.0;
@@ -273,3 +312,4 @@ class _SheetPembaruanState extends State<SheetPembaruan> {
     );
   }
 }
+

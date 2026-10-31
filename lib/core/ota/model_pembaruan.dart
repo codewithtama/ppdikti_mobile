@@ -69,3 +69,4 @@ class StatusCekPembaruan {
   final int buildSaatIni;
   final String? pesan;
 }
+

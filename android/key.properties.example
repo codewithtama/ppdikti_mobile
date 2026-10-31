@@ -6,3 +6,4 @@ storePassword=password_keystore_anda
 keyPassword=password_key_anda
 keyAlias=pddikti_release
 storeFile=../upload-keystore.jks
+

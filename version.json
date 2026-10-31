@@ -1,14 +1,14 @@
 {
-  "version": "1.0.0",
-  "build_number": 1,
+  "version": "1.0.1",
+  "build_number": 2,
   "release_date": "2026-11-01",
   "changelog": [
-    "Peta kepulauan Indonesia vektor luring lengkap (32 provinsi)",
-    "Pencarian terpadu mahasiswa, dosen, kampus, dan prodi langsung ke gateway resmi",
-    "Detail profil mahasiswa 8 atribut resmi (NIM, PT, Jenjang-Prodi, Status Awal, Status Terakhir)",
-    "Sistem pembaruan mandiri (OTA update) dengan validasi integritas checksum SHA-256"
+    "Ketentuan dan Kebijakan Penggunaan resmi dengan timer 10 detik (hanya 1x muncul)",
+    "Izin instalasi paket tidak dikenal otomatis untuk pembaruan mandiri OTA yang mulus",
+    "Penandatanganan rilis APK produksi Android standar 2026 (V1, V2, V3, V4)",
+    "Peta luring Indonesia 32 provinsi & pencarian terpadu langsung tanpa Cloudflare block"
   ],
-  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.0/app-release.apk",
+  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.1/app-release.apk",
   "sha256": "",
   "force_update": false
 }
