@@ -5,6 +5,7 @@ import '../../core/format/status_akademik.dart';
 import '../../core/format/tanggal.dart';
 import '../../core/theme/tokens.dart';
 import '../../data/model/pencarian_global.dart';
+import 'bagikan_profil_sheet.dart';
 import 'pencarian_vm.dart';
 
 class DetailMahasiswaLayar extends ConsumerStatefulWidget {
@@ -46,6 +47,22 @@ class _DetailMahasiswaLayarState extends ConsumerState<DetailMahasiswaLayar> {
           icon: const Icon(PhosphorIconsRegular.arrowLeft),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(PhosphorIconsRegular.shareNetwork),
+            tooltip: 'Bagikan Profil / Unduh PDF',
+            onPressed: () {
+              final mhs = widget.ringkasan;
+              _futureDetail.then((d) {
+                if (!context.mounted) return;
+                final target = d ?? (mhs != null ? DetailMahasiswa(ringkasan: mhs) : null);
+                if (target != null) {
+                  BagikanProfilSheet.tampilkan(context, mahasiswa: target);
+                }
+              });
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<DetailMahasiswa?>(
         future: _futureDetail,
@@ -129,6 +146,30 @@ class _DetailMahasiswaLayarState extends ConsumerState<DetailMahasiswaLayar> {
                 ),
 
                 const Divider(height: 1, color: Warna.garis),
+
+                // Tombol Aksi Bagikan / Unduh PDF
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Warna.kunyit,
+                      side: const BorderSide(color: Warna.kunyit, width: 1.2),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    icon: const Icon(PhosphorIconsRegular.shareNetwork, size: 18),
+                    label: const Text(
+                      'Bagikan Profil & Unduh Dokumen PDF',
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                    ),
+                    onPressed: () {
+                      final target = detail ?? DetailMahasiswa(ringkasan: mhs);
+                      BagikanProfilSheet.tampilkan(context, mahasiswa: target);
+                    },
+                  ),
+                ),
 
                 // Data Utama 2 Kolom (Sesuai Format PDDikti Resmi)
                 Padding(

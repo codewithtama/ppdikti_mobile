@@ -16,6 +16,7 @@ import '../beranda/peta/peta_painter.dart';
 import 'detail_vm.dart';
 import 'kampus_vm.dart';
 import 'logo_kampus.dart';
+import 'seksi_prodi_kampus.dart';
 
 class DetailKampusLayar extends ConsumerWidget {
   const DetailKampusLayar({super.key, required this.kode});
@@ -367,6 +368,22 @@ class DetailKampusLayar extends ConsumerWidget {
                     ? FormatTanggal.tanggal(detail.tglBerdiri!)
                     : '—',
               ),
+              if (detail.jumlahProdi != null) ...[
+                const Divider(color: Warna.garis, height: 16),
+                _BarisInfoDetail(
+                  label: 'Jumlah Program Studi',
+                  nilai: '${detail.jumlahProdi} Program Studi',
+                  warnaNilai: Warna.kunyit,
+                ),
+              ],
+              if (detail.rasioDosen != null && detail.rasioDosen!.isNotEmpty) ...[
+                const Divider(color: Warna.garis, height: 16),
+                _BarisInfoDetail(
+                  label: 'Rasio Dosen : Mahasiswa',
+                  nilai: detail.rasioDosen!,
+                  warnaNilai: Warna.laut,
+                ),
+              ],
               if (detail.kelompok.isNotEmpty) ...[
                 const Divider(color: Warna.garis, height: 16),
                 _BarisInfoDetail(label: 'Kelompok', nilai: detail.kelompok),
@@ -671,7 +688,14 @@ class DetailKampusLayar extends ConsumerWidget {
           const SizedBox(height: 24),
         ],
 
-        // 7. Tombol Aksi Bawah
+        // 7. Daftar Program Studi Terdaftar
+        SeksiProdiKampus(
+          namaPt: detail.nama,
+          jumlahProdiTotal: detail.jumlahProdi,
+        ),
+        const SizedBox(height: 24),
+
+        // 8. Tombol Aksi Bawah
         Row(
           children: [
             Expanded(

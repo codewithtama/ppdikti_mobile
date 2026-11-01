@@ -101,13 +101,21 @@ class ApiSumber {
     try {
       final encodedId = Uri.encodeComponent(idSp.trim());
       
-      // Ambil detail utama dan kisaran biaya secara paralel
+      // Ambil detail utama, kisaran biaya, jumlah prodi, dan rasio secara paralel
       final results = await Future.wait([
         _dio.get<dynamic>('/pt/detail/$encodedId').catchError((_) => Response<dynamic>(
               requestOptions: RequestOptions(),
               data: null,
             )),
         _dio.get<dynamic>('/pt/cost-range/$encodedId').catchError((_) => Response<dynamic>(
+              requestOptions: RequestOptions(),
+              data: null,
+            )),
+        _dio.get<dynamic>('/pt/jumlah-prodi/$encodedId').catchError((_) => Response<dynamic>(
+              requestOptions: RequestOptions(),
+              data: null,
+            )),
+        _dio.get<dynamic>('/pt/rasio/$encodedId').catchError((_) => Response<dynamic>(
               requestOptions: RequestOptions(),
               data: null,
             )),
@@ -122,10 +130,35 @@ class ApiSumber {
         }
       }
 
+      int? jumlahProdi;
+      final jmRes = results[2].data;
+      if (jmRes is Map<String, dynamic>) {
+        final jData = jmRes['data'];
+        if (jData is Map<String, dynamic>) {
+          final jp = jData['jumlah_prodi'];
+          if (jp is int) jumlahProdi = jp;
+          if (jp is String) jumlahProdi = int.tryParse(jp);
+        }
+      }
+
+      String? rasioDosen;
+      final rsRes = results[3].data;
+      if (rsRes is Map<String, dynamic>) {
+        final rData = rsRes['data'];
+        if (rData is Map<String, dynamic>) {
+          rasioDosen = (rData['rasio'] as String?)?.trim();
+        }
+      }
+
       final detailRes = results[0].data;
       if (detailRes is Map<String, dynamic>) {
         final dMap = (detailRes['data'] as Map<String, dynamic>?) ?? detailRes;
-        return DetailKampus.fromJson(dMap, biayaKuliahOverride: biayaKuliah);
+        return DetailKampus.fromJson(
+          dMap,
+          biayaKuliahOverride: biayaKuliah,
+          jumlahProdiOverride: jumlahProdi,
+          rasioDosenOverride: rasioDosen,
+        );
       }
 
       if (fallback != null) {
@@ -139,6 +172,8 @@ class ApiSumber {
           biayaKuliah: biayaKuliah,
           lintang: fallback.koordinat?.lintang,
           bujur: fallback.koordinat?.bujur,
+          jumlahProdi: jumlahProdi,
+          rasioDosen: rasioDosen,
         );
       }
       return null;
@@ -156,6 +191,23 @@ class ApiSumber {
         );
       }
       throw petakanDioError(e);
+    }
+  }
+
+  /// Mengambil daftar program studi yang terdaftar di bawah perguruan tinggi
+  Future<List<HasilProdi>> ambilProdiKampus(String namaPt) async {
+    final clean = namaPt.trim();
+    if (clean.isEmpty) return const [];
+    try {
+      final encoded = Uri.encodeComponent(clean);
+      final res = await _dio.get<dynamic>('/pencarian/prodi/$encoded');
+      final list = _ambilList(res.data);
+      return list
+          .whereType<Map<String, dynamic>>()
+          .map(HasilProdi.fromJson)
+          .toList();
+    } catch (_) {
+      return const [];
     }
   }
 

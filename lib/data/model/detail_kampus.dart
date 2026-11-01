@@ -23,6 +23,8 @@ class DetailKampus {
     this.kodePos,
     this.lintang,
     this.bujur,
+    this.jumlahProdi,
+    this.rasioDosen,
   });
 
   final String idSp;
@@ -48,10 +50,14 @@ class DetailKampus {
   final String? kodePos;
   final double? lintang;
   final double? bujur;
+  final int? jumlahProdi;
+  final String? rasioDosen;
 
   factory DetailKampus.fromJson(
     Map<String, dynamic> j, {
     String? biayaKuliahOverride,
+    int? jumlahProdiOverride,
+    String? rasioDosenOverride,
   }) {
     String str(String k) => ((j[k] as String?) ?? '').trim();
     double? numVal(String k) {
@@ -87,11 +93,15 @@ class DetailKampus {
       kodePos: str('kode_pos'),
       lintang: numVal('lintang_pt') ?? numVal('lintang'),
       bujur: numVal('bujur_pt') ?? numVal('bujur'),
+      jumlahProdi: jumlahProdiOverride,
+      rasioDosen: rasioDosenOverride,
     );
   }
 
   DetailKampus copyWith({
     String? biayaKuliah,
+    int? jumlahProdi,
+    String? rasioDosen,
   }) {
     return DetailKampus(
       idSp: idSp,
@@ -117,7 +127,8 @@ class DetailKampus {
       kodePos: kodePos,
       lintang: lintang,
       bujur: bujur,
+      jumlahProdi: jumlahProdi ?? this.jumlahProdi,
+      rasioDosen: rasioDosen ?? this.rasioDosen,
     );
   }
 }
-

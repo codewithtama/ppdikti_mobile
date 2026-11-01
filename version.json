@@ -1,12 +1,14 @@
 {
-  "version": "1.0.7",
-  "build_number": 8,
+  "version": "1.0.8",
+  "build_number": 9,
   "release_date": "2026-11-01",
   "changelog": [
-    "Pengujian pembaruan sistem OTA otomatis (Over-The-Air)",
-    "Optimalisasi kestabilan performa dan deteksi versi real-time"
+    "Daftar Program Studi resmi lengkap dengan filter jenjang dan pencarian nama prodi di Detail Kampus",
+    "Informasi Rasio Dosen : Mahasiswa dan Total Jumlah Program Studi pada profil perguruan tinggi",
+    "Fitur Ekspor Dokumen PDF Resmi berkop Kemdiktisaintek PDDikti untuk profil Mahasiswa & Dosen",
+    "Fitur Bagikan Ringkasan Terverifikasi langsung ke WhatsApp dan media sosial"
   ],
-  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.7/app-release.apk",
-  "sha256": "8c5d78b018eed179f86bd85a6cf3182bcd5445d98b529f99aa90c7bd3a8dc28e",
+  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.8/app-release.apk",
+  "sha256": "99d85476fc34ab369c0710cb0b0da3bc3be4c1f80f2216363c9fe2c4ce5fb43a",
   "force_update": false
 }

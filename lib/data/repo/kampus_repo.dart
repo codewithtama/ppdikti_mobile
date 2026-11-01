@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
 import '../model/detail_kampus.dart';
 import '../model/kampus.dart';
+import '../model/pencarian_global.dart';
 import '../sumber/api_sumber.dart';
 import '../sumber/cache_berkas.dart';
 import '../../fitur/kampus/indeks_pencarian.dart';
@@ -109,6 +110,7 @@ class KampusRepo {
   KampusRepo(this._api);
   final ApiSumber _api;
   final Map<String, DetailKampus> _cacheDetailKampus = {};
+  final Map<String, List<HasilProdi>> _cacheProdiKampus = {};
 
   Future<DetailKampus?> dapatkanDetailKampus(String idSp, {Kampus? fallback}) async {
     if (_cacheDetailKampus.containsKey(idSp)) {
@@ -119,6 +121,16 @@ class KampusRepo {
       _cacheDetailKampus[idSp] = detail;
     }
     return detail;
+  }
+
+  Future<List<HasilProdi>> dapatkanProdiKampus(String namaPt) async {
+    final k = namaPt.trim().toLowerCase();
+    if (_cacheProdiKampus.containsKey(k)) {
+      return _cacheProdiKampus[k]!;
+    }
+    final list = await _api.ambilProdiKampus(namaPt);
+    _cacheProdiKampus[k] = list;
+    return list;
   }
 
   Future<Map<String, String>> _muatAlias() async {
