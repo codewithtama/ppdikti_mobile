@@ -354,15 +354,13 @@ class _PetaPenuhLayarState extends ConsumerState<PetaPenuhLayar>
                   maxZoom: 18.5,
                 ),
                 children: [
-                  // Lapisan Tile OSM
+                  // Lapisan Tile OSM (100% Bebas API Key & Tanpa Watermark)
                   TileLayer(
-                    urlTemplate: _tipeLapisan == TipeLapisanPeta.osmDark
-                        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                        : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    subdomains: _tipeLapisan == TipeLapisanPeta.osmDark
-                        ? const ['a', 'b', 'c', 'd']
-                        : const [],
-                    userAgentPackageName: 'com.pddikti.pddikti_mobile',
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'id.go.kemdiktisaintek.pddikti_mobile',
+                    tileBuilder: _tipeLapisan == TipeLapisanPeta.osmDark
+                        ? darkModeTileBuilder
+                        : null,
                   ),
 
                   // Lapisan Titik Kampus (Semua titik koordinat)

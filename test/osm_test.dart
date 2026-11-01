@@ -49,4 +49,31 @@ void main() {
     expect(find.textContaining('Peta Kampus'), findsOneWidget);
     expect(find.byType(FlutterMap), findsOneWidget);
   });
+
+  testWidgets('3. TileLayer OSM Dark menggunakan darkModeTileBuilder tanpa API key', (tester) async {
+    final controller = MapController();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FlutterMap(
+            mapController: controller,
+            options: const MapOptions(
+              initialCenter: LatLng(-6.2, 106.8),
+              initialZoom: 10.0,
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'id.go.kemdiktisaintek.pddikti_mobile',
+                tileBuilder: darkModeTileBuilder,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(TileLayer), findsOneWidget);
+  });
 }
