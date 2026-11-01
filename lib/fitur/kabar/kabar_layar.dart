@@ -58,9 +58,7 @@ class _KabarLayarState extends ConsumerState<KabarLayar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kabar'),
-      ),
+      appBar: AppBar(title: const Text('Kabar')),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -97,10 +95,18 @@ class _KabarLayarState extends ConsumerState<KabarLayar> {
                 hintText: _tabAktif == TabKabar.pengumuman
                     ? 'Cari pengumuman'
                     : 'Cari publikasi',
-                prefixIcon: const Icon(Icons.search, size: 20, color: Warna.kapurRedup),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  size: 20,
+                  color: Warna.kapurRedup,
+                ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.close, size: 20, color: Warna.kapurRedup),
+                        icon: const Icon(
+                          Icons.close,
+                          size: 20,
+                          color: Warna.kapurRedup,
+                        ),
                         onPressed: () {
                           _searchController.clear();
                           _onSearchChanged('');
@@ -180,7 +186,10 @@ class _DaftarPengumuman extends ConsumerWidget {
       loading: () => const Center(
         child: Padding(
           padding: EdgeInsets.all(24),
-          child: Text('Memuat pengumuman...', style: TextStyle(color: Warna.kapurRedup)),
+          child: Text(
+            'Memuat pengumuman...',
+            style: TextStyle(color: Warna.kapurRedup),
+          ),
         ),
       ),
       error: (e, _) => Center(
@@ -192,7 +201,8 @@ class _DaftarPengumuman extends ConsumerWidget {
               Text('Pengumuman belum bisa dimuat.', style: Gaya.isi),
               const SizedBox(height: 12),
               FilledButton(
-                onPressed: () => ref.read(pengumumanProvider.notifier).segarkan(),
+                onPressed: () =>
+                    ref.read(pengumumanProvider.notifier).segarkan(),
                 child: const Text('Coba lagi'),
               ),
             ],
@@ -202,7 +212,10 @@ class _DaftarPengumuman extends ConsumerWidget {
       data: (data) {
         if (data.items.isEmpty) {
           return Center(
-            child: Text('Tidak ada pengumuman.', style: Gaya.isi.copyWith(color: Warna.kapurRedup)),
+            child: Text(
+              'Tidak ada pengumuman.',
+              style: Gaya.isi.copyWith(color: Warna.kapurRedup),
+            ),
           );
         }
 
@@ -217,7 +230,12 @@ class _DaftarPengumuman extends ConsumerWidget {
               if (index >= data.items.length) {
                 return const Padding(
                   padding: EdgeInsets.all(16),
-                  child: Center(child: Text('Memuat lanjutan...', style: TextStyle(color: Warna.kapurRedup))),
+                  child: Center(
+                    child: Text(
+                      'Memuat lanjutan...',
+                      style: TextStyle(color: Warna.kapurRedup),
+                    ),
+                  ),
                 );
               }
 
@@ -235,18 +253,30 @@ class _DaftarPengumuman extends ConsumerWidget {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (context) => PengumumanDetailLayar(pengumuman: item),
+                      builder: (context) =>
+                          PengumumanDetailLayar(pengumuman: item),
                     ),
                   );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.judul, style: Gaya.namaBaris, maxLines: 3, overflow: TextOverflow.ellipsis),
+                      Text(
+                        item.judul,
+                        style: Gaya.namaBaris,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       const SizedBox(height: 4),
-                      Text(FormatTanggal.tanggal(item.dibuatPada), style: Gaya.label),
+                      Text(
+                        FormatTanggal.tanggal(item.dibuatPada),
+                        style: Gaya.label,
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         duaBaris,
@@ -277,7 +307,10 @@ class _DaftarPublikasi extends ConsumerWidget {
       loading: () => const Center(
         child: Padding(
           padding: EdgeInsets.all(24),
-          child: Text('Memuat publikasi...', style: TextStyle(color: Warna.kapurRedup)),
+          child: Text(
+            'Memuat publikasi...',
+            style: TextStyle(color: Warna.kapurRedup),
+          ),
         ),
       ),
       error: (e, _) => Center(
@@ -289,7 +322,8 @@ class _DaftarPublikasi extends ConsumerWidget {
               Text('Publikasi belum bisa dimuat.', style: Gaya.isi),
               const SizedBox(height: 12),
               FilledButton(
-                onPressed: () => ref.read(publikasiProvider.notifier).segarkan(),
+                onPressed: () =>
+                    ref.read(publikasiProvider.notifier).segarkan(),
                 child: const Text('Coba lagi'),
               ),
             ],
@@ -299,7 +333,10 @@ class _DaftarPublikasi extends ConsumerWidget {
       data: (data) {
         if (data.items.isEmpty) {
           return Center(
-            child: Text('Tidak ada publikasi.', style: Gaya.isi.copyWith(color: Warna.kapurRedup)),
+            child: Text(
+              'Tidak ada publikasi.',
+              style: Gaya.isi.copyWith(color: Warna.kapurRedup),
+            ),
           );
         }
 
@@ -314,7 +351,12 @@ class _DaftarPublikasi extends ConsumerWidget {
               if (index >= data.items.length) {
                 return const Padding(
                   padding: EdgeInsets.all(16),
-                  child: Center(child: Text('Memuat lanjutan...', style: TextStyle(color: Warna.kapurRedup))),
+                  child: Center(
+                    child: Text(
+                      'Memuat lanjutan...',
+                      style: TextStyle(color: Warna.kapurRedup),
+                    ),
+                  ),
                 );
               }
 
@@ -333,7 +375,10 @@ class _DaftarPublikasi extends ConsumerWidget {
                   }
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -359,7 +404,8 @@ class _DaftarPublikasi extends ConsumerWidget {
                               FormatTanggal.tanggal(item.dibuatPada),
                               style: Gaya.label,
                             ),
-                            if (item.tautan != null && item.tautan!.isNotEmpty) ...[
+                            if (item.tautan != null &&
+                                item.tautan!.isNotEmpty) ...[
                               const SizedBox(height: 10),
                               Row(
                                 children: [

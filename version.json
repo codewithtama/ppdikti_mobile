@@ -1,14 +1,14 @@
 {
-  "version": "1.0.5",
-  "build_number": 6,
+  "version": "1.0.6",
+  "build_number": 7,
   "release_date": "2026-11-01",
   "changelog": [
-    "Pembaruan OTA Otomatis saat aplikasi pertama kali dibuka di layar Beranda",
-    "Penyempurnaan penginstalan langsung sistem Android via FileProvider & Intent asli",
-    "Bypass cache manifest GitHub dengan timestamp dinamis real-time",
-    "Peta OpenStreetMap resmi bebas API key & tanpa watermark"
+    "Thumbnail Publikasi Resmi dengan desain sampul digital & gradien tahun",
+    "Logo Resmi Perguruan Tinggi dari CDN PDDikti dengan fallback inisial",
+    "Profil Lengkap Kampus: Biaya Kuliah, No/Tgl SK Pendirian, Akreditasi, Kontak resmi & Google Maps",
+    "Filter Kampus Komprehensif: Jenis (PTN, PTS, PTKL, PTA), 38 Provinsi, Akreditasi, dan Status Keaktifan"
   ],
-  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.5/app-release.apk",
-  "sha256": "e9b55f4e7ff5691040dd9c113186f530cafe0d62d836041a7e7a80114a5def44",
+  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.6/app-release.apk",
+  "sha256": "4823bad5a5f237e16e1e7896245f4692eed623885e8d789328bdb8dae3215285",
   "force_update": false
 }

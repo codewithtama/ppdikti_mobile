@@ -32,7 +32,10 @@ class DetailKampusLayar extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Tentang tingkat kelulusan', style: Gaya.judulLayar.copyWith(fontSize: 18)),
+              Text(
+                'Tentang tingkat kelulusan',
+                style: Gaya.judulLayar.copyWith(fontSize: 18),
+              ),
               const SizedBox(height: 12),
               Text(
                 'Angka dari PDDikti. Periode dan cara menghitungnya tidak dijelaskan di API, jadi jangan dipakai untuk membandingkan kampus.',
@@ -80,19 +83,27 @@ class DetailKampusLayar extends ConsumerWidget {
     }
   }
 
-  Future<void> _bukaGoogleMaps(double lintang, double bujur, String nama) async {
+  Future<void> _bukaGoogleMaps(
+    double lintang,
+    double bujur,
+    String nama,
+  ) async {
     final uri = Uri.parse('geo:$lintang,$bujur?q=$lintang,$bujur($nama)');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
-      final webUri = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lintang,$bujur');
+      final webUri = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$lintang,$bujur',
+      );
       await launchUrl(webUri, mode: LaunchMode.externalApplication);
     }
   }
 
   Color _warnaStatus(String status) {
     final st = status.toLowerCase();
-    if (st.contains('aktif') && !st.contains('non')) return const Color(0xFF22C55E);
+    if (st.contains('aktif') && !st.contains('non')) {
+      return const Color(0xFF22C55E);
+    }
     if (st.contains('alih')) return const Color(0xFF3B82F6);
     if (st.contains('tutup')) return const Color(0xFFEF4444);
     if (st.contains('bina')) return const Color(0xFFF59E0B);
@@ -110,9 +121,7 @@ class DetailKampusLayar extends ConsumerWidget {
     if (kampus == null) {
       return Scaffold(
         appBar: AppBar(),
-        body: Center(
-          child: Text('Kampus tidak ditemukan.', style: Gaya.isi),
-        ),
+        body: Center(child: Text('Kampus tidak ditemukan.', style: Gaya.isi)),
       );
     }
 
@@ -137,7 +146,10 @@ class DetailKampusLayar extends ConsumerWidget {
             children: [
               CircularProgressIndicator(color: Warna.kunyit, strokeWidth: 2),
               SizedBox(height: 12),
-              Text('Memuat profil lengkap kampus...', style: TextStyle(color: Warna.kapurRedup)),
+              Text(
+                'Memuat profil lengkap kampus...',
+                style: TextStyle(color: Warna.kapurRedup),
+              ),
             ],
           ),
         ),
@@ -161,7 +173,8 @@ class DetailKampusLayar extends ConsumerWidget {
         data: (detail) => _buildTampilanDetail(
           context: context,
           ref: ref,
-          detail: detail ??
+          detail:
+              detail ??
               DetailKampus(
                 idSp: kampus.idSp,
                 kode: kampus.kode,
@@ -194,12 +207,18 @@ class DetailKampusLayar extends ConsumerWidget {
     final adaKoordinat = kLintang != null && kBujur != null;
 
     // Format alamat lengkap
-    final bagianAlamat = [
-      detail.alamat,
-      detail.kabKota,
-      detail.provinsi,
-      if (detail.kodePos != null && detail.kodePos!.isNotEmpty) 'Kode Pos ${detail.kodePos}',
-    ].where((s) => s != null && s.trim().isNotEmpty && s != 'Tidak Diisi').join(', ');
+    final bagianAlamat =
+        [
+              detail.alamat,
+              detail.kabKota,
+              detail.provinsi,
+              if (detail.kodePos != null && detail.kodePos!.isNotEmpty)
+                'Kode Pos ${detail.kodePos}',
+            ]
+            .where(
+              (s) => s != null && s.trim().isNotEmpty && s != 'Tidak Diisi',
+            )
+            .join(', ');
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
@@ -215,11 +234,7 @@ class DetailKampusLayar extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              LogoKampus(
-                idSp: detail.idSp,
-                nama: detail.nama,
-                ukuran: 64,
-              ),
+              LogoKampus(idSp: detail.idSp, nama: detail.nama, ukuran: 64),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -234,7 +249,8 @@ class DetailKampusLayar extends ConsumerWidget {
                         height: 1.25,
                       ),
                     ),
-                    if (detail.namaSingkat != null && detail.namaSingkat!.isNotEmpty) ...[
+                    if (detail.namaSingkat != null &&
+                        detail.namaSingkat!.isNotEmpty) ...[
                       const SizedBox(height: 3),
                       Text(
                         detail.namaSingkat!,
@@ -249,7 +265,10 @@ class DetailKampusLayar extends ConsumerWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: statusColor.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(4),
@@ -318,8 +337,11 @@ class DetailKampusLayar extends ConsumerWidget {
               const Divider(color: Warna.garis, height: 16),
               _BarisInfoDetail(
                 label: 'Akreditasi',
-                nilai: detail.akreditasi.isNotEmpty ? detail.akreditasi : 'Belum Terakreditasi',
-                warnaNilai: detail.akreditasi.toLowerCase().contains('unggul') ||
+                nilai: detail.akreditasi.isNotEmpty
+                    ? detail.akreditasi
+                    : 'Belum Terakreditasi',
+                warnaNilai:
+                    detail.akreditasi.toLowerCase().contains('unggul') ||
                         detail.akreditasi.toLowerCase().contains('baik')
                     ? Warna.kunyit
                     : Warna.kapur,
@@ -327,7 +349,9 @@ class DetailKampusLayar extends ConsumerWidget {
               const Divider(color: Warna.garis, height: 16),
               _BarisInfoDetail(
                 label: 'Biaya Kuliah',
-                nilai: detail.biayaKuliah.isNotEmpty ? 'Rp${detail.biayaKuliah}' : 'Rp -',
+                nilai: detail.biayaKuliah.isNotEmpty
+                    ? 'Rp${detail.biayaKuliah}'
+                    : 'Rp -',
                 warnaNilai: Warna.laut,
               ),
               const Divider(color: Warna.garis, height: 16),
@@ -338,7 +362,8 @@ class DetailKampusLayar extends ConsumerWidget {
               const Divider(color: Warna.garis, height: 16),
               _BarisInfoDetail(
                 label: 'Tanggal Berdiri',
-                nilai: detail.tglBerdiri != null && detail.tglBerdiri!.isNotEmpty
+                nilai:
+                    detail.tglBerdiri != null && detail.tglBerdiri!.isNotEmpty
                     ? FormatTanggal.tanggal(detail.tglBerdiri!)
                     : '—',
               ),
@@ -377,14 +402,18 @@ class DetailKampusLayar extends ConsumerWidget {
             children: [
               _BarisInfoDetail(
                 label: 'No SK Pendirian',
-                nilai: detail.noSkPendirian != null && detail.noSkPendirian!.isNotEmpty
+                nilai:
+                    detail.noSkPendirian != null &&
+                        detail.noSkPendirian!.isNotEmpty
                     ? detail.noSkPendirian!
                     : '—',
               ),
               const Divider(color: Warna.garis, height: 16),
               _BarisInfoDetail(
                 label: 'Tanggal SK Pendirian',
-                nilai: detail.tglSkPendirian != null && detail.tglSkPendirian!.isNotEmpty
+                nilai:
+                    detail.tglSkPendirian != null &&
+                        detail.tglSkPendirian!.isNotEmpty
                     ? FormatTanggal.tanggal(detail.tglSkPendirian!)
                     : '—',
               ),
@@ -392,7 +421,9 @@ class DetailKampusLayar extends ConsumerWidget {
               _BarisKontakAksi(
                 icon: PhosphorIconsRegular.phone,
                 label: 'Telepon',
-                nilai: detail.telepon != null && detail.telepon!.isNotEmpty ? detail.telepon! : '—',
+                nilai: detail.telepon != null && detail.telepon!.isNotEmpty
+                    ? detail.telepon!
+                    : '—',
                 onTap: detail.telepon != null && detail.telepon!.isNotEmpty
                     ? () => _telepon(detail.telepon!)
                     : null,
@@ -405,7 +436,9 @@ class DetailKampusLayar extends ConsumerWidget {
               _BarisKontakAksi(
                 icon: PhosphorIconsRegular.envelopeSimple,
                 label: 'Email',
-                nilai: detail.email != null && detail.email!.isNotEmpty ? detail.email! : '—',
+                nilai: detail.email != null && detail.email!.isNotEmpty
+                    ? detail.email!
+                    : '—',
                 onTap: detail.email != null && detail.email!.isNotEmpty
                     ? () => _kirimEmail(detail.email!)
                     : null,
@@ -414,7 +447,9 @@ class DetailKampusLayar extends ConsumerWidget {
               _BarisKontakAksi(
                 icon: PhosphorIconsRegular.globe,
                 label: 'Website',
-                nilai: detail.website != null && detail.website!.isNotEmpty ? detail.website! : '—',
+                nilai: detail.website != null && detail.website!.isNotEmpty
+                    ? detail.website!
+                    : '—',
                 onTap: detail.website != null && detail.website!.isNotEmpty
                     ? () => _bukaTautan(detail.website!)
                     : null,
@@ -448,11 +483,17 @@ class DetailKampusLayar extends ConsumerWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(PhosphorIconsFill.mapPin, color: Color(0xFFEA4335), size: 22),
+                  const Icon(
+                    PhosphorIconsFill.mapPin,
+                    color: Color(0xFFEA4335),
+                    size: 22,
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      bagianAlamat.isNotEmpty ? bagianAlamat : 'Alamat belum diisi oleh kampus.',
+                      bagianAlamat.isNotEmpty
+                          ? bagianAlamat
+                          : 'Alamat belum diisi oleh kampus.',
                       style: const TextStyle(
                         color: Warna.kapur,
                         fontSize: 14,
@@ -467,8 +508,12 @@ class DetailKampusLayar extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    icon: const Icon(PhosphorIconsRegular.navigationArrow, size: 16),
-                    onPressed: () => _bukaGoogleMaps(kLintang, kBujur, detail.nama),
+                    icon: const Icon(
+                      PhosphorIconsRegular.navigationArrow,
+                      size: 16,
+                    ),
+                    onPressed: () =>
+                        _bukaGoogleMaps(kLintang, kBujur, detail.nama),
                     label: const Text('Buka Navigasi di Google Maps'),
                   ),
                 ),
@@ -481,17 +526,26 @@ class DetailKampusLayar extends ConsumerWidget {
         // 5. Bagian Tingkat Kelulusan
         Row(
           children: [
-            Text('Tingkat kelulusan', style: Gaya.judulLayar.copyWith(fontSize: 18)),
+            Text(
+              'Tingkat kelulusan',
+              style: Gaya.judulLayar.copyWith(fontSize: 18),
+            ),
             const SizedBox(width: 4),
             IconButton(
-              icon: const Icon(Icons.info_outline, size: 18, color: Warna.kapurRedup),
+              icon: const Icon(
+                Icons.info_outline,
+                size: 18,
+                color: Warna.kapurRedup,
+              ),
               tooltip: 'Info tingkat kelulusan',
               onPressed: () => _tampilkanInfoKelulusan(context),
             ),
             const Spacer(),
             kelulusanAsync.when(
               data: (kel) {
-                if (!kel.adaData) return Text('Belum ada data', style: Gaya.catatan);
+                if (!kel.adaData) {
+                  return Text('Belum ada data', style: Gaya.catatan);
+                }
                 return Text(
                   FormatAngka.persenSatuDesimal(kel.angka),
                   style: Gaya.angka,
@@ -549,13 +603,16 @@ class DetailKampusLayar extends ConsumerWidget {
 
                       const skala = 5.0;
                       final tx = (constraints.maxWidth / 2) - (canvasX * skala);
-                      final ty = (constraints.maxHeight / 2) - (canvasY * skala);
+                      final ty =
+                          (constraints.maxHeight / 2) - (canvasY * skala);
 
                       final kontrol = TransformationController(
-                        Matrix4.translationValues(tx, ty, 0.0)..scaleByDouble(skala, skala, 1.0, 1.0),
+                        Matrix4.translationValues(tx, ty, 0.0)
+                          ..scaleByDouble(skala, skala, 1.0, 1.0),
                       );
 
-                      final titikBuffer = dataParsed?.titikBiasaBuffer ?? Float32List(0);
+                      final titikBuffer =
+                          dataParsed?.titikBiasaBuffer ?? Float32List(0);
                       final titikSorot = Float32List(2)
                         ..[0] = centerPt.x
                         ..[1] = centerPt.y;
@@ -578,7 +635,10 @@ class DetailKampusLayar extends ConsumerWidget {
                   right: 8,
                   bottom: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Warna.tinta.withValues(alpha: 0.85),
                       borderRadius: BorderRadius.circular(4),
@@ -587,7 +647,11 @@ class DetailKampusLayar extends ConsumerWidget {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(PhosphorIconsRegular.cornersOut, color: Warna.kunyit, size: 12),
+                        Icon(
+                          PhosphorIconsRegular.cornersOut,
+                          color: Warna.kunyit,
+                          size: 12,
+                        ),
                         SizedBox(width: 4),
                         Text(
                           'Buka Peta Interaktif',
@@ -664,10 +728,7 @@ class _BarisInfoDetail extends StatelessWidget {
           width: 140,
           child: Text(
             label,
-            style: const TextStyle(
-              color: Warna.kapurRedup,
-              fontSize: 13,
-            ),
+            style: const TextStyle(color: Warna.kapurRedup, fontSize: 13),
           ),
         ),
         const SizedBox(width: 8),
@@ -716,11 +777,18 @@ class _BarisKontakAksi extends StatelessWidget {
               width: 140,
               child: Row(
                 children: [
-                  Icon(icon, size: 16, color: bisaDitekan ? Warna.kunyit : Warna.kapurRedup),
+                  Icon(
+                    icon,
+                    size: 16,
+                    color: bisaDitekan ? Warna.kunyit : Warna.kapurRedup,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     label,
-                    style: const TextStyle(color: Warna.kapurRedup, fontSize: 13),
+                    style: const TextStyle(
+                      color: Warna.kapurRedup,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),
