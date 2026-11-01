@@ -54,14 +54,21 @@ jobs:
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "$KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
             cat <<EOF > android/key.properties
-            storePassword=$STORE_PASSWORD
-            keyPassword=$KEY_PASSWORD
-            keyAlias=$KEY_ALIAS
-            storeFile=upload-keystore.jks
+          storePassword=$STORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=upload-keystore.jks
           EOF
-            echo "Keystore release berhasil dikonfigurasi."
+            echo "Keystore release berhasil dikonfigurasi dari secrets."
           else
-            echo "Secrets keystore tidak ditemukan. Menggunakan default debug signature fallback."
+            echo "Secrets keystore tidak ditemukan. Membuat release keystore otomatis."
+            keytool -genkey -v -keystore android/upload-keystore.jks -alias pddikti_release -keyalg RSA -keysize 2048 -validity 10000 -storepass pddikti2026production -keypass pddikti2026production -dname "CN=PDDikti, O=Kemdiktisaintek, C=ID"
+            cat <<EOF > android/key.properties
+          storePassword=pddikti2026production
+          keyPassword=pddikti2026production
+          keyAlias=pddikti_release
+          storeFile=upload-keystore.jks
+          EOF
           fi
 
       - name: Build Release APK

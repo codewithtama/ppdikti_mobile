@@ -25,5 +25,16 @@ class LayananIzinAndroid {
       return false;
     }
   }
+
+  /// Memasang berkas APK secara langsung melalui Android PackageInstaller Intent
+  static Future<bool> pasangApk(String filePath) async {
+    if (!Platform.isAndroid) return false;
+    try {
+      final res = await _channel.invokeMethod<bool>('pasangApk', {'filePath': filePath});
+      return res ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
 }
 

@@ -5,6 +5,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/format/angka.dart';
 import '../../core/format/tanggal.dart';
 import '../../core/net/galat.dart';
+import '../../core/ota/layanan_pembaruan.dart';
+import '../../core/ota/model_pembaruan.dart';
+import '../../core/ota/sheet_pembaruan.dart';
 import '../../core/theme/tokens.dart';
 import '../kampus/kampus_vm.dart';
 import '../pencarian/pencarian_vm.dart';
@@ -13,11 +16,51 @@ import 'bidang_ilmu_tabel.dart';
 import 'ledger.dart';
 import 'peta/peta_tertanam.dart';
 
-class BerandaLayar extends ConsumerWidget {
+class BerandaLayar extends ConsumerStatefulWidget {
   const BerandaLayar({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BerandaLayar> createState() => _BerandaLayarState();
+}
+
+class _BerandaLayarState extends ConsumerState<BerandaLayar> {
+  bool _sudahPeriksaOta = false;
+  InfoPembaruan? _infoPembaruanTersedia;
+  String? _versiLokal;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _periksaOtaOtomatis();
+    });
+  }
+
+  Future<void> _periksaOtaOtomatis() async {
+    if (_sudahPeriksaOta || !mounted) return;
+    _sudahPeriksaOta = true;
+
+    try {
+      final layanan = ref.read(layananPembaruanProvider);
+      final status = await layanan.periksaPembaruan();
+      if (status.adaPembaruan && status.info != null && mounted) {
+        setState(() {
+          _infoPembaruanTersedia = status.info;
+          _versiLokal = status.versiSaatIni;
+        });
+
+        await SheetPembaruan.tampilkan(
+          context: context,
+          info: status.info!,
+          versiSaatIni: status.versiSaatIni,
+          layanan: layanan,
+        );
+      }
+    } catch (_) {}
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final statusUnduhAsync = ref.watch(daftarKampusProvider);
     final progressPesan = ref.watch(progressDaftarKampusProvider);
     final berandaAsync = ref.watch(berandaProvider);
@@ -26,6 +69,22 @@ class BerandaLayar extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('PDDikti Mobile'),
         actions: [
+          if (_infoPembaruanTersedia != null)
+            IconButton(
+              icon: const Badge(
+                backgroundColor: Warna.kunyit,
+                child: Icon(PhosphorIconsRegular.arrowCircleDown, color: Warna.kunyit, size: 24),
+              ),
+              tooltip: 'Pembaruan v${_infoPembaruanTersedia!.versi} tersedia',
+              onPressed: () {
+                SheetPembaruan.tampilkan(
+                  context: context,
+                  info: _infoPembaruanTersedia!,
+                  versiSaatIni: _versiLokal ?? '1.0.0',
+                  layanan: ref.read(layananPembaruanProvider),
+                );
+              },
+            ),
           IconButton(
             icon: const Icon(Icons.info_outline, size: 22),
             tooltip: 'Tentang aplikasi',

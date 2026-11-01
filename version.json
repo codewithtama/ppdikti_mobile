@@ -1,13 +1,14 @@
 {
-  "version": "1.0.4",
-  "build_number": 5,
+  "version": "1.0.5",
+  "build_number": 6,
   "release_date": "2026-11-01",
   "changelog": [
-    "Peta bebas API key & tanpa watermark (menghilangkan watermark 'API KEY REQUIRED')",
-    "Migrasi penuh lapisan peta ke OpenStreetMap resmi dengan darkModeTileBuilder client-side",
-    "Peta Dark Mode presisi tanpa ketergantungan server pihak ketiga berbayar"
+    "Pembaruan OTA Otomatis saat aplikasi pertama kali dibuka di layar Beranda",
+    "Penyempurnaan penginstalan langsung sistem Android via FileProvider & Intent asli",
+    "Bypass cache manifest GitHub dengan timestamp dinamis real-time",
+    "Peta OpenStreetMap resmi bebas API key & tanpa watermark"
   ],
-  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.4/app-release.apk",
-  "sha256": "32d3980a57cd9097c2b0447700b9998e2c70ba2c622902965642fcd8c5e5c7d3",
+  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.5/app-release.apk",
+  "sha256": "287773e2fb411edc1c071f385d51afe56d4d06c962ef1eac3ee314618d11fc93",
   "force_update": false
 }

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import '../izin/layanan_izin_android.dart';
 import 'model_pembaruan.dart';
 
 const String defaultOtaManifestUrl = String.fromEnvironment(
@@ -37,7 +38,9 @@ class LayananPembaruan {
 
       // 1. Coba baca manifest version.json dari GitHub
       try {
-        final targetUrl = manifestUrl ?? defaultOtaManifestUrl;
+        final baseUrl = manifestUrl ?? defaultOtaManifestUrl;
+        final separator = baseUrl.contains('?') ? '&' : '?';
+        final targetUrl = '$baseUrl${separator}t=${DateTime.now().millisecondsSinceEpoch}';
         final res = await _dio.get<String>(
           targetUrl,
           options: Options(
@@ -152,8 +155,11 @@ class LayananPembaruan {
     required void Function(double persen, int diterima, int total) onProgress,
     CancelToken? cancelToken,
   }) async {
-    final tempDir = await getTemporaryDirectory();
-    final fileApk = File('${tempDir.path}/pddikti_mobile_update.apk');
+    final extDirs = await getExternalCacheDirectories();
+    final cacheDir = (extDirs != null && extDirs.isNotEmpty)
+        ? extDirs.first
+        : await getTemporaryDirectory();
+    final fileApk = File('${cacheDir.path}/pddikti_mobile_update.apk');
 
     if (fileApk.existsSync()) {
       try {
@@ -194,6 +200,13 @@ class LayananPembaruan {
     }
 
     // 3. Picu instalasi via Android PackageInstaller
+    if (Platform.isAndroid) {
+      try {
+        final berhasil = await LayananIzinAndroid.pasangApk(fileApk.path);
+        if (berhasil) return;
+      } catch (_) {}
+    }
+
     final result = await OpenFilex.open(
       fileApk.path,
       type: 'application/vnd.android.package-archive',
