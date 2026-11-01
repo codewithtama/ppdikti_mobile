@@ -64,11 +64,7 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
     final dataParsed = ref.read(daftarKampusProvider).value;
     if (dataParsed == null) return;
 
-    final hasil = await showModalBottomSheet<({
-      Set<String> kelompok,
-      Set<String> pembina,
-      Set<String> kota,
-    })>(
+    final hasil = await showModalBottomSheet<HasilFilterKampus>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -84,6 +80,9 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
         kelompok: hasil.kelompok,
         pembina: hasil.pembina,
         kota: hasil.kota,
+        provinsi: hasil.provinsi,
+        akreditasi: hasil.akreditasi,
+        status: hasil.status,
       );
     }
   }
@@ -273,6 +272,24 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
                                 onHapus: () => ref
                                     .read(kampusQueryProvider.notifier)
                                     .hapusKelompokTertentu(kel),
+                              )),
+                          ...queryKampus.provinsi.map((pr) => _ChipFilter(
+                                label: pr,
+                                onHapus: () => ref
+                                    .read(kampusQueryProvider.notifier)
+                                    .hapusProvinsiTertentu(pr),
+                              )),
+                          ...queryKampus.akreditasi.map((ak) => _ChipFilter(
+                                label: ak,
+                                onHapus: () => ref
+                                    .read(kampusQueryProvider.notifier)
+                                    .hapusAkreditasiTertentu(ak),
+                              )),
+                          ...queryKampus.status.map((st) => _ChipFilter(
+                                label: st,
+                                onHapus: () => ref
+                                    .read(kampusQueryProvider.notifier)
+                                    .hapusStatusTertentu(st),
                               )),
                           ...queryKampus.pembina.map((pem) => _ChipFilter(
                                 label: pem,
@@ -950,74 +967,220 @@ class _BarisKampusItem extends StatelessWidget {
   const _BarisKampusItem({required this.kampus});
   final Kampus kampus;
 
+  Color _warnaStatus(String status) {
+    final st = status.toLowerCase();
+    if (st.contains('aktif') && !st.contains('non')) return const Color(0xFF22C55E);
+    if (st.contains('alih')) return const Color(0xFF3B82F6);
+    if (st.contains('tutup')) return const Color(0xFFEF4444);
+    if (st.contains('bina')) return const Color(0xFFF59E0B);
+    return Warna.kunyit;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        context.push('/kampus/${kampus.kode}');
-      },
-      child: Container(
-        color: Warna.tinta,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            LogoKampus(idSp: kampus.idSp, nama: kampus.nama, ukuran: 40),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
+    final statusColor = _warnaStatus(kampus.status);
+    final lokasi = [
+      kampus.kota,
+      if (kampus.provinsi != null && kampus.provinsi != 'Lainnya') 'Prov. ${kampus.provinsi}',
+    ].where((s) => s != null && s.isNotEmpty && s != 'Tidak Diisi').join(', ');
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: Warna.tintaAngkat,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Warna.garis, width: 1),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          context.push('/kampus/${kampus.kode}');
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Baris Atas: Logo Kampus, Nama, dan Badge Status
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    kampus.nama,
-                    style: const TextStyle(
-                      color: Warna.kapur,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        kampus.kode,
-                        style: const TextStyle(
-                          color: Warna.kapurRedup,
-                          fontSize: 12,
-                          fontFamily: 'monospace',
-                        ),
-                      ),
-                      if (kampus.kota != null && kampus.kota!.isNotEmpty) ...[
-                        const SizedBox(width: 6),
-                        Text('·', style: TextStyle(color: Warna.kapurRedup.withValues(alpha: 0.5))),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            kampus.kota!,
-                            style: const TextStyle(
-                              color: Warna.kapurRedup,
-                              fontSize: 12,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                  LogoKampus(idSp: kampus.idSp, nama: kampus.nama, ukuran: 46),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          kampus.nama,
+                          style: const TextStyle(
+                            color: Warna.kapur,
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w700,
+                            height: 1.25,
                           ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: statusColor.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(color: statusColor, width: 1),
+                              ),
+                              child: Text(
+                                kampus.status,
+                                style: TextStyle(
+                                  color: statusColor,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              kampus.kode,
+                              style: const TextStyle(
+                                color: Warna.kapurRedup,
+                                fontSize: 11.5,
+                                fontFamily: 'monospace',
+                              ),
+                            ),
+                          ],
                         ),
                       ],
-                    ],
+                    ),
                   ),
                 ],
               ),
-            ),
-            if (kampus.koordinat != null)
-              IconButton(
-                icon: const Icon(PhosphorIconsRegular.mapPin, size: 18, color: Warna.kunyit),
-                tooltip: 'Lihat di peta',
-                onPressed: () => context.push('/peta?kode=${kampus.kode}'),
+              const SizedBox(height: 10),
+
+              // Lokasi Kampus
+              if (lokasi.isNotEmpty) ...[
+                Row(
+                  children: [
+                    const Icon(PhosphorIconsRegular.mapPin, size: 14, color: Warna.kapurRedup),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        lokasi,
+                        style: const TextStyle(
+                          color: Warna.kapurRedup,
+                          fontSize: 12.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
+
+              // Info Chips Baris (Akreditasi, Kelompok / Program Studi)
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  _BadgeInfoMini(
+                    icon: PhosphorIconsRegular.certificate,
+                    label: kampus.akreditasi.isNotEmpty ? kampus.akreditasi : 'Terakreditasi',
+                    warna: Warna.kunyit,
+                  ),
+                  _BadgeInfoMini(
+                    icon: PhosphorIconsRegular.books,
+                    label: kampus.kelompok,
+                    warna: Warna.laut,
+                  ),
+                  if (kampus.pembina.isNotEmpty)
+                    _BadgeInfoMini(
+                      icon: PhosphorIconsRegular.buildings,
+                      label: kampus.pembina,
+                      warna: Warna.kapurRedup,
+                    ),
+                ],
               ),
-            const Icon(PhosphorIconsRegular.caretRight, size: 16, color: Warna.kapurRedup),
-          ],
+              const SizedBox(height: 12),
+              const Divider(color: Warna.garis, height: 1),
+              const SizedBox(height: 8),
+
+              // Baris Aksi Bawah: Lihat Detail & Pin Peta
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        context.push('/kampus/${kampus.kode}');
+                      },
+                      style: OutlinedButton.styleFrom(
+                        visualDensity: VisualDensity.compact,
+                        side: const BorderSide(color: Warna.garisTegas),
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                      ),
+                      child: const Text('Lihat Detail', style: TextStyle(fontSize: 12.5)),
+                    ),
+                  ),
+                  if (kampus.koordinat != null) ...[
+                    const SizedBox(width: 8),
+                    IconButton.outlined(
+                      icon: const Icon(PhosphorIconsRegular.mapPin, size: 16, color: Warna.kunyit),
+                      tooltip: 'Lihat di peta',
+                      style: IconButton.styleFrom(
+                        visualDensity: VisualDensity.compact,
+                        side: const BorderSide(color: Warna.garisTegas),
+                      ),
+                      onPressed: () => context.push('/peta?kode=${kampus.kode}'),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _BadgeInfoMini extends StatelessWidget {
+  const _BadgeInfoMini({
+    required this.icon,
+    required this.label,
+    required this.warna,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color warna;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: warna.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: warna.withValues(alpha: 0.4), width: 0.8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: warna),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: warna,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

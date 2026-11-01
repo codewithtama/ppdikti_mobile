@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/format/tanggal.dart';
 import '../../core/theme/tokens.dart';
 import 'pengumuman_detail_layar.dart';
 import 'pengumuman_vm.dart';
+import 'publikasi_thumbnail.dart';
 import 'publikasi_vm.dart';
 import 'tautan_keluar_sheet.dart';
 
@@ -326,12 +326,6 @@ class _DaftarPublikasi extends ConsumerWidget {
 
               final item = data.items[index];
 
-              // URL Sampul publikasi
-              String? thumbUrl = item.thumbnail;
-              if (thumbUrl != null && !thumbUrl.startsWith('http')) {
-                thumbUrl = 'https://pddikti.kemdiktisaintek.go.id$thumbUrl';
-              }
-
               return InkWell(
                 onTap: () {
                   if (item.tautan != null && item.tautan!.isNotEmpty) {
@@ -343,34 +337,13 @@ class _DaftarPublikasi extends ConsumerWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Sampul rasio 3:4 lebar 72dp (tinggi 96dp)
-                      Container(
-                        width: 72,
-                        height: 96,
-                        color: Warna.tintaAngkat,
-                        child: thumbUrl != null
-                            ? CachedNetworkImage(
-                                imageUrl: thumbUrl,
-                                fit: BoxFit.cover,
-                                fadeInDuration: Duration.zero,
-                                fadeOutDuration: Duration.zero,
-                                placeholder: (context, url) => Container(
-                                  color: Warna.tintaAngkat,
-                                  alignment: Alignment.center,
-                                  child: const Icon(Icons.description_outlined, color: Warna.kapurRedup),
-                                ),
-                                errorWidget: (context, url, error) => Container(
-                                  color: Warna.tintaAngkat,
-                                  alignment: Alignment.center,
-                                  child: const Icon(Icons.description_outlined, color: Warna.kapurRedup),
-                                ),
-                              )
-                            : Container(
-                                alignment: Alignment.center,
-                                child: const Icon(Icons.description_outlined, color: Warna.kapurRedup),
-                              ),
+                      // Sampul rasio 3:4 dengan desain resmi PDDikti
+                      PublikasiThumbnail(
+                        publikasi: item,
+                        lebar: 80,
+                        tinggi: 104,
                       ),
-                      const SizedBox(width: 14),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,6 +359,26 @@ class _DaftarPublikasi extends ConsumerWidget {
                               FormatTanggal.tanggal(item.dibuatPada),
                               style: Gaya.label,
                             ),
+                            if (item.tautan != null && item.tautan!.isNotEmpty) ...[
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.open_in_new,
+                                    size: 14,
+                                    color: Warna.kunyit,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Buka Dokumen',
+                                    style: Gaya.catatan.copyWith(
+                                      color: Warna.kunyit,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ],
                         ),
                       ),

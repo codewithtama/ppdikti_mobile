@@ -50,41 +50,63 @@ class LogoKampus extends StatelessWidget {
     return 'K';
   }
 
+  static const Map<String, String> _headersLogo = {
+    'Origin': 'https://pddikti.kemdiktisaintek.go.id',
+    'Referer': 'https://pddikti.kemdiktisaintek.go.id/',
+    'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+    'X-User-IP': '103.47.132.29',
+  };
+
   @override
   Widget build(BuildContext context) {
     final monogram = hitungMonogram(nama);
     final fallback = Container(
       width: ukuran,
       height: ukuran,
-      color: Warna.tintaAngkat,
+      decoration: BoxDecoration(
+        color: Warna.tintaAngkat,
+        shape: BoxShape.circle,
+        border: Border.all(color: Warna.garis, width: 1),
+      ),
       alignment: Alignment.center,
       child: Text(
         monogram,
         style: Gaya.tombol.copyWith(
-          fontSize: ukuran * 0.42,
-          fontWeight: FontWeight.w600,
-          color: Warna.kapur,
+          fontSize: ukuran * 0.38,
+          fontWeight: FontWeight.w700,
+          color: Warna.kunyit,
         ),
       ),
     );
 
-    if (idSp.isEmpty) {
+    if (idSp.trim().isEmpty) {
       return fallback;
     }
 
-    final encodedId = Uri.encodeComponent(idSp);
-    final url = 'https://pddikti.kemdiktisaintek.go.id/api/pt/logo/$encodedId';
+    final encodedId = Uri.encodeComponent(idSp.trim());
+    final url = 'https://api-pddikti.kemdiktisaintek.go.id/pt/logo/$encodedId';
 
-    return SizedBox(
+    return Container(
       width: ukuran,
       height: ukuran,
-      child: CachedNetworkImage(
-        imageUrl: url,
-        fit: BoxFit.contain,
-        fadeInDuration: Duration.zero,
-        fadeOutDuration: Duration.zero,
-        placeholder: (context, url) => fallback,
-        errorWidget: (context, url, error) => fallback,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: Warna.garis, width: 1),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: EdgeInsets.all(ukuran * 0.08),
+        child: CachedNetworkImage(
+          imageUrl: url,
+          httpHeaders: _headersLogo,
+          fit: BoxFit.contain,
+          fadeInDuration: const Duration(milliseconds: 150),
+          fadeOutDuration: Duration.zero,
+          placeholder: (context, url) => fallback,
+          errorWidget: (context, url, error) => fallback,
+        ),
       ),
     );
   }

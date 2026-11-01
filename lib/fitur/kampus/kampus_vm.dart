@@ -69,24 +69,36 @@ class KampusQuery {
     this.kelompok = const {},
     this.pembina = const {},
     this.kota = const {},
+    this.provinsi = const {},
+    this.akreditasi = const {},
+    this.status = const {},
   });
 
   final String q;
   final Set<String> kelompok;
   final Set<String> pembina;
   final Set<String> kota;
+  final Set<String> provinsi;
+  final Set<String> akreditasi;
+  final Set<String> status;
 
   bool get adaFilter =>
       q.trim().isNotEmpty ||
       kelompok.isNotEmpty ||
       pembina.isNotEmpty ||
-      kota.isNotEmpty;
+      kota.isNotEmpty ||
+      provinsi.isNotEmpty ||
+      akreditasi.isNotEmpty ||
+      status.isNotEmpty;
 
   int get totalKategoriFilterAktif {
     int count = 0;
     if (kelompok.isNotEmpty) count++;
     if (pembina.isNotEmpty) count++;
     if (kota.isNotEmpty) count++;
+    if (provinsi.isNotEmpty) count++;
+    if (akreditasi.isNotEmpty) count++;
+    if (status.isNotEmpty) count++;
     return count;
   }
 
@@ -95,12 +107,18 @@ class KampusQuery {
     Set<String>? kelompok,
     Set<String>? pembina,
     Set<String>? kota,
+    Set<String>? provinsi,
+    Set<String>? akreditasi,
+    Set<String>? status,
   }) =>
       KampusQuery(
         q: q ?? this.q,
         kelompok: kelompok ?? this.kelompok,
         pembina: pembina ?? this.pembina,
         kota: kota ?? this.kota,
+        provinsi: provinsi ?? this.provinsi,
+        akreditasi: akreditasi ?? this.akreditasi,
+        status: status ?? this.status,
       );
 
   @override
@@ -111,7 +129,10 @@ class KampusQuery {
           q == other.q &&
           const SetEquality<String>().equals(kelompok, other.kelompok) &&
           const SetEquality<String>().equals(pembina, other.pembina) &&
-          const SetEquality<String>().equals(kota, other.kota);
+          const SetEquality<String>().equals(kota, other.kota) &&
+          const SetEquality<String>().equals(provinsi, other.provinsi) &&
+          const SetEquality<String>().equals(akreditasi, other.akreditasi) &&
+          const SetEquality<String>().equals(status, other.status);
 
   @override
   int get hashCode => Object.hash(
@@ -119,6 +140,9 @@ class KampusQuery {
         const SetEquality<String>().hash(kelompok),
         const SetEquality<String>().hash(pembina),
         const SetEquality<String>().hash(kota),
+        const SetEquality<String>().hash(provinsi),
+        const SetEquality<String>().hash(akreditasi),
+        const SetEquality<String>().hash(status),
       );
 }
 
@@ -134,11 +158,17 @@ class KampusQueryNotifier extends Notifier<KampusQuery> {
     Set<String>? kelompok,
     Set<String>? pembina,
     Set<String>? kota,
+    Set<String>? provinsi,
+    Set<String>? akreditasi,
+    Set<String>? status,
   }) {
     state = state.copyWith(
       kelompok: kelompok,
       pembina: pembina,
       kota: kota,
+      provinsi: provinsi,
+      akreditasi: akreditasi,
+      status: status,
     );
   }
 
@@ -159,6 +189,21 @@ class KampusQueryNotifier extends Notifier<KampusQuery> {
   void hapusKotaTertentu(String c) {
     final baru = Set<String>.from(state.kota)..remove(c);
     state = state.copyWith(kota: baru);
+  }
+
+  void hapusProvinsiTertentu(String pr) {
+    final baru = Set<String>.from(state.provinsi)..remove(pr);
+    state = state.copyWith(provinsi: baru);
+  }
+
+  void hapusAkreditasiTertentu(String a) {
+    final baru = Set<String>.from(state.akreditasi)..remove(a);
+    state = state.copyWith(akreditasi: baru);
+  }
+
+  void hapusStatusTertentu(String s) {
+    final baru = Set<String>.from(state.status)..remove(s);
+    state = state.copyWith(status: baru);
   }
 }
 
@@ -209,7 +254,7 @@ final hasilKampusProvider = Provider<HasilKampus>((ref) {
   final qNorm = normalisasi(qMurni);
   final kataQ = qNorm.isEmpty ? const <String>[] : qNorm.split(' ');
 
-  // Filter kelompok, pembina, kota
+  // Filter kelompok/jenis, pembina, kota, provinsi, status, akreditasi
   bool cocokKategori(Kampus k) {
     if (query.kelompok.isNotEmpty && !query.kelompok.contains(k.kelompok)) {
       return false;
@@ -221,6 +266,26 @@ final hasilKampusProvider = Provider<HasilKampus>((ref) {
       if (k.kota == null || !query.kota.contains(k.kota)) {
         return false;
       }
+    }
+    if (query.provinsi.isNotEmpty) {
+      if (k.provinsi == null || !query.provinsi.contains(k.provinsi)) {
+        return false;
+      }
+    }
+    if (query.status.isNotEmpty) {
+      if (!query.status.contains(k.status)) {
+        return false;
+      }
+    }
+    if (query.akreditasi.isNotEmpty) {
+      bool cocokAkred = false;
+      final akredLower = k.akreditasi.toLowerCase();
+      for (final ak in query.akreditasi) {
+        if (ak == 'Unggul' && akredLower.contains('unggul')) cocokAkred = true;
+        if (ak == 'Terakreditasi' && (akredLower.isNotEmpty && !akredLower.contains('tidak'))) cocokAkred = true;
+        if (ak == 'Tidak Terakreditasi' && (akredLower.isEmpty || akredLower.contains('tidak'))) cocokAkred = true;
+      }
+      if (!cocokAkred) return false;
     }
     return true;
   }

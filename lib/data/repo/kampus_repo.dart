@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:isolate';
 import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
+import '../model/detail_kampus.dart';
 import '../model/kampus.dart';
 import '../sumber/api_sumber.dart';
 import '../sumber/cache_berkas.dart';
@@ -107,6 +108,18 @@ Future<DataParsedKampus> _jalankanIsolateDiBackground({
 class KampusRepo {
   KampusRepo(this._api);
   final ApiSumber _api;
+  final Map<String, DetailKampus> _cacheDetailKampus = {};
+
+  Future<DetailKampus?> dapatkanDetailKampus(String idSp, {Kampus? fallback}) async {
+    if (_cacheDetailKampus.containsKey(idSp)) {
+      return _cacheDetailKampus[idSp];
+    }
+    final detail = await _api.ambilDetailKampus(idSp, fallback: fallback);
+    if (detail != null) {
+      _cacheDetailKampus[idSp] = detail;
+    }
+    return detail;
+  }
 
   Future<Map<String, String>> _muatAlias() async {
     try {

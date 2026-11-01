@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../../core/net/dio_klien.dart';
 import '../../core/net/galat.dart';
 import '../model/beranda.dart';
+import '../model/detail_kampus.dart';
 import '../model/kampus.dart';
 import '../model/kelulusan.dart';
 import '../model/pencarian_global.dart';
@@ -75,6 +76,85 @@ class ApiSumber {
       }
       return Kelulusan.fromJson(res.data as Map<String, dynamic>);
     } catch (e) {
+      throw petakanDioError(e);
+    }
+  }
+
+  /// Mengambil profil detail lengkap perguruan tinggi
+  Future<DetailKampus?> ambilDetailKampus(String idSp, {Kampus? fallback}) async {
+    if (idSp.trim().isEmpty) {
+      if (fallback != null) {
+        return DetailKampus(
+          idSp: fallback.idSp,
+          kode: fallback.kode,
+          nama: fallback.nama,
+          kelompok: fallback.kelompok,
+          pembina: fallback.pembina,
+          kabKota: fallback.kota,
+          lintang: fallback.koordinat?.lintang,
+          bujur: fallback.koordinat?.bujur,
+        );
+      }
+      return null;
+    }
+
+    try {
+      final encodedId = Uri.encodeComponent(idSp.trim());
+      
+      // Ambil detail utama dan kisaran biaya secara paralel
+      final results = await Future.wait([
+        _dio.get<dynamic>('/pt/detail/$encodedId').catchError((_) => Response<dynamic>(
+              requestOptions: RequestOptions(),
+              data: null,
+            )),
+        _dio.get<dynamic>('/pt/cost-range/$encodedId').catchError((_) => Response<dynamic>(
+              requestOptions: RequestOptions(),
+              data: null,
+            )),
+      ]);
+
+      String biayaKuliah = '';
+      final costRes = results[1].data;
+      if (costRes is Map<String, dynamic>) {
+        final cData = costRes['data'];
+        if (cData is Map<String, dynamic>) {
+          biayaKuliah = (cData['range_biaya_kuliah'] as String?)?.trim() ?? '';
+        }
+      }
+
+      final detailRes = results[0].data;
+      if (detailRes is Map<String, dynamic>) {
+        final dMap = (detailRes['data'] as Map<String, dynamic>?) ?? detailRes;
+        return DetailKampus.fromJson(dMap, biayaKuliahOverride: biayaKuliah);
+      }
+
+      if (fallback != null) {
+        return DetailKampus(
+          idSp: fallback.idSp,
+          kode: fallback.kode,
+          nama: fallback.nama,
+          kelompok: fallback.kelompok,
+          pembina: fallback.pembina,
+          kabKota: fallback.kota,
+          biayaKuliah: biayaKuliah,
+          lintang: fallback.koordinat?.lintang,
+          bujur: fallback.koordinat?.bujur,
+        );
+      }
+      return null;
+    } catch (e) {
+      if (fallback != null) {
+        return DetailKampus(
+          idSp: fallback.idSp,
+          kode: fallback.kode,
+          nama: fallback.nama,
+          kelompok: fallback.kelompok,
+          pembina: fallback.pembina,
+          kabKota: fallback.kota,
+          lintang: fallback.koordinat?.lintang,
+          bujur: fallback.koordinat?.bujur,
+        );
+      }
       throw petakanDioError(e);
     }
   }
