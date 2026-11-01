@@ -1,14 +1,14 @@
 {
-  "version": "1.0.2",
-  "build_number": 3,
+  "version": "1.0.3",
+  "build_number": 4,
   "release_date": "2026-11-01",
   "changelog": [
-    "Integrasi Peta OpenStreetMap interaktif (CartoDB Dark Matter & Standar OSM)",
-    "Animasi kamera meluncur & auto-zoom Google Maps style ke titik koordinat kampus",
-    "Penanda beacon pin khusus pada kampus terpilih dengan floating preview card",
-    "Dukungan mode ganti tampilan fleksibel: OSM Dark, OSM Terang, dan Vektor Luring"
+    "Perbaikan akurasi status akademik mahasiswa & dosen (Aktif, Non-Aktif, Lulus, Cuti, Keluar)",
+    "Pemberian warna badge dinamis berstandar identitas: Hijau Laut (Aktif), Kunyit Emas (Lulus), Karang Merah (Non-Aktif/Keluar), Kapur Redup (Cuti)",
+    "Pencarian cerdas meng-enrich status real-time dari PDDikti resmi tanpa asumsi hardcoded",
+    "Pencegahan salah deteksi status (pengecekan presisi Non-Aktif/Tidak Aktif vs Aktif)"
   ],
-  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.2/app-release.apk",
-  "sha256": "efa2a341e25b56a811d02f9754aaed2cfbeefbf44593174b1a919214c9956c88",
+  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.3/app-release.apk",
+  "sha256": "6f9cc6dfd4ad37fade3b34571cc32edea7e18348f0c713248fee2795191e6984",
   "force_update": false
 }

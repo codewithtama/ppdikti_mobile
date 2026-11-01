@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pddikti_mobile/core/format/status_akademik.dart';
 import 'package:pddikti_mobile/core/net/crypto_pddikti.dart';
+import 'package:pddikti_mobile/core/theme/tokens.dart';
 import 'package:pddikti_mobile/data/model/pencarian_global.dart';
 import 'package:pddikti_mobile/fitur/beranda/peta/peta_painter.dart';
 
@@ -129,6 +131,61 @@ void main() {
       expect(bounds.right, lessThanOrEqualTo(1.0));
       expect(bounds.top, greaterThanOrEqualTo(0.0));
       expect(bounds.bottom, lessThanOrEqualTo(0.40));
+    });
+
+    test('6. StatusAkademikHelper memetakan status dan warna dengan presisi', () {
+      // Non-Aktif
+      expect(StatusAkademikHelper.ringkasStatus('Non-Aktif-2026/2027 Ganjil'), equals('NON-AKTIF'));
+      expect(StatusAkademikHelper.warnaTeks('Non-Aktif-2026/2027 Ganjil'), equals(Warna.karang));
+
+      expect(StatusAkademikHelper.ringkasStatus('Tidak Aktif'), equals('NON-AKTIF'));
+      expect(StatusAkademikHelper.warnaTeks('Tidak Aktif'), equals(Warna.karang));
+
+      // Aktif
+      expect(StatusAkademikHelper.ringkasStatus('Aktif-2025/2026 Genap'), equals('AKTIF'));
+      expect(StatusAkademikHelper.warnaTeks('Aktif-2025/2026 Genap'), equals(Warna.laut));
+
+      // Lulus
+      expect(StatusAkademikHelper.ringkasStatus('Lulus-2020/2021 Genap'), equals('LULUS'));
+      expect(StatusAkademikHelper.warnaTeks('Lulus-2020/2021 Genap'), equals(Warna.kunyit));
+
+      // Cuti
+      expect(StatusAkademikHelper.ringkasStatus('Cuti-2024/2025 Genap'), equals('CUTI'));
+      expect(StatusAkademikHelper.warnaTeks('Cuti-2024/2025 Genap'), equals(Warna.kapurRedup));
+
+      // Keluar / Mengundurkan Diri
+      expect(StatusAkademikHelper.ringkasStatus('Mengundurkan Diri'), equals('KELUAR'));
+      expect(StatusAkademikHelper.warnaTeks('Mengundurkan Diri'), equals(Warna.karang));
+
+      // Drop Out
+      expect(StatusAkademikHelper.ringkasStatus('Drop Out'), equals('DROP OUT'));
+      expect(StatusAkademikHelper.warnaTeks('Drop Out'), equals(Warna.karang));
+
+      // Kosong / Null
+      expect(StatusAkademikHelper.ringkasStatus(null), equals(''));
+      expect(StatusAkademikHelper.ringkasStatus(''), equals(''));
+    });
+
+    test('7. HasilMahasiswa tanpa status di respons pencarian tidak berasumsi "Aktif"', () {
+      final jsonPencarian = {
+        'id': 'MHS999',
+        'nama': 'ZALFA ADHIA SALSABILA',
+        'nim': '23050400012',
+        'nama_pt': 'UNIVERSITAS MUHAMMADIYAH JAKARTA',
+        'sinkatan_pt': 'UMJ',
+        'nama_prodi': 'PERBANKAN SYARIAH',
+      };
+
+      final mhs = HasilMahasiswa.fromJson(jsonPencarian);
+      expect(mhs.status, isNull);
+
+      final jsonDetail = {
+        ...jsonPencarian,
+        'status_saat_ini': 'Non-Aktif-2026/2027 Ganjil',
+      };
+      final detail = DetailMahasiswa.fromJson(jsonDetail, fallback: mhs);
+      expect(detail.ringkasan.status, equals('Non-Aktif-2026/2027 Ganjil'));
+      expect(detail.statusTerakhir, equals('Non-Aktif-2026/2027 Ganjil'));
     });
   });
 }

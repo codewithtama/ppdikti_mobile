@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../../core/format/status_akademik.dart';
 import '../../core/theme/tokens.dart';
 import '../../data/model/pencarian_global.dart';
 import 'pencarian_vm.dart';
@@ -77,53 +78,57 @@ class _DetailDosenLayarState extends ConsumerState<DetailDosenLayar> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: dsn.status.toLowerCase() == 'aktif'
-                                  ? Warna.laut.withValues(alpha: 0.15)
-                                  : Warna.kunyit.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(2),
-                              border: Border.all(
-                                color: dsn.status.toLowerCase() == 'aktif'
-                                    ? Warna.laut
-                                    : Warna.kunyit,
-                                width: 1,
-                              ),
-                            ),
-                            child: Text(
-                              dsn.status.toUpperCase(),
-                              style: TextStyle(
-                                color: dsn.status.toLowerCase() == 'aktif'
-                                    ? Warna.laut
-                                    : Warna.kunyit,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ),
-                          if (dsn.pendidikanTertinggi != null) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Warna.garis,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                              child: Text(
-                                dsn.pendidikanTertinggi!,
-                                style: const TextStyle(
-                                  color: Warna.kapur,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
+                      Builder(
+                        builder: (context) {
+                          final statusRaw = dsn.status;
+                          final warnaStatus = StatusAkademikHelper.warnaTeks(statusRaw);
+                          final labelStatus = (statusRaw != null && statusRaw.isNotEmpty)
+                              ? statusRaw.toUpperCase()
+                              : 'TIDAK TERSEDIA';
+
+                          return Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: warnaStatus.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(2),
+                                  border: Border.all(
+                                    color: warnaStatus,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  labelStatus,
+                                  style: TextStyle(
+                                    color: warnaStatus,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.5,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ],
+                              if (dsn.pendidikanTertinggi != null) ...[
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Warna.garis,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                  child: Text(
+                                    dsn.pendidikanTertinggi!,
+                                    style: const TextStyle(
+                                      color: Warna.kapur,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          );
+                        },
                       ),
                       const SizedBox(height: 12),
                       Text(

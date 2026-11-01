@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../../core/format/status_akademik.dart';
 import '../../core/format/tanggal.dart';
 import '../../core/theme/tokens.dart';
 import '../../data/model/pencarian_global.dart';
@@ -67,9 +68,11 @@ class _DetailMahasiswaLayarState extends ConsumerState<DetailMahasiswaLayar> {
             );
           }
 
-          final statusAktif = (detail?.statusTerakhir ?? mhs.status).toLowerCase();
-          final bool isLulus = statusAktif.contains('lulus');
-          final bool isAktif = statusAktif.contains('aktif');
+          final statusRaw = detail?.statusTerakhir ?? mhs.status;
+          final warnaStatus = StatusAkademikHelper.warnaTeks(statusRaw);
+          final labelStatus = (statusRaw != null && statusRaw.isNotEmpty)
+              ? statusRaw.toUpperCase()
+              : 'TIDAK TERSEDIA';
 
           final String formatTglMasuk = detail?.tanggalMasuk != null && detail!.tanggalMasuk!.isNotEmpty
               ? FormatTanggal.tanggal(detail.tanggalMasuk!)
@@ -88,19 +91,17 @@ class _DetailMahasiswaLayarState extends ConsumerState<DetailMahasiswaLayar> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: isLulus || isAktif
-                              ? Warna.laut.withValues(alpha: 0.15)
-                              : Warna.kunyit.withValues(alpha: 0.15),
+                          color: warnaStatus.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(2),
                           border: Border.all(
-                            color: isLulus || isAktif ? Warna.laut : Warna.kunyit,
+                            color: warnaStatus,
                             width: 1,
                           ),
                         ),
                         child: Text(
-                          (detail?.statusTerakhir ?? mhs.status).toUpperCase(),
+                          labelStatus,
                           style: TextStyle(
-                            color: isLulus || isAktif ? Warna.laut : Warna.kunyit,
+                            color: warnaStatus,
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.5,
@@ -194,8 +195,8 @@ class _DetailMahasiswaLayarState extends ConsumerState<DetailMahasiswaLayar> {
                         ),
                         kanan: _SelData(
                           label: 'Status Terakhir Mahasiswa',
-                          nilai: detail?.statusTerakhir ?? mhs.status,
-                          warnaNilai: isLulus || isAktif ? Warna.laut : Warna.kunyit,
+                          nilai: statusRaw ?? '-',
+                          warnaNilai: warnaStatus,
                         ),
                       ),
                     ],

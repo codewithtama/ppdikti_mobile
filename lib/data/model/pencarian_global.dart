@@ -8,8 +8,8 @@ class HasilMahasiswa {
     required this.namaPt,
     this.singkatanPt,
     required this.namaProdi,
-    this.status = 'Aktif',
-    this.jenjang = 'S1',
+    this.status,
+    this.jenjang = 'Sarjana',
     this.tahunMasuk,
   });
 
@@ -19,11 +19,36 @@ class HasilMahasiswa {
   final String namaPt;
   final String? singkatanPt;
   final String namaProdi;
-  final String status;
+  final String? status;
   final String jenjang;
   final String? tahunMasuk;
 
+  HasilMahasiswa copyWith({
+    String? id,
+    String? nama,
+    String? nim,
+    String? namaPt,
+    String? singkatanPt,
+    String? namaProdi,
+    String? status,
+    String? jenjang,
+    String? tahunMasuk,
+  }) {
+    return HasilMahasiswa(
+      id: id ?? this.id,
+      nama: nama ?? this.nama,
+      nim: nim ?? this.nim,
+      namaPt: namaPt ?? this.namaPt,
+      singkatanPt: singkatanPt ?? this.singkatanPt,
+      namaProdi: namaProdi ?? this.namaProdi,
+      status: status ?? this.status,
+      jenjang: jenjang ?? this.jenjang,
+      tahunMasuk: tahunMasuk ?? this.tahunMasuk,
+    );
+  }
+
   factory HasilMahasiswa.fromJson(Map<String, dynamic> json) {
+    final rawStatus = (json['status_saat_ini'] ?? json['status_mahasiswa'] ?? json['status'])?.toString().trim();
     return HasilMahasiswa(
       id: (json['id'] ?? json['id_mahasiswa'] ?? '').toString(),
       nama: (json['nama'] ?? json['nama_mahasiswa'] ?? '').toString().trim(),
@@ -31,7 +56,7 @@ class HasilMahasiswa {
       namaPt: (json['nama_pt'] ?? json['pt'] ?? '').toString().trim(),
       singkatanPt: (json['sinkatan_pt'] ?? json['singkatan_pt'])?.toString().trim(),
       namaProdi: (json['prodi'] ?? json['nama_prodi'] ?? '').toString().trim(),
-      status: (json['status_saat_ini'] ?? json['status_mahasiswa'] ?? json['status'] ?? 'Aktif').toString().trim(),
+      status: (rawStatus != null && rawStatus.isNotEmpty) ? rawStatus : null,
       jenjang: (json['jenjang'] ?? 'Sarjana').toString().trim(),
       tahunMasuk: (json['tanggal_masuk'] ?? json['tahun_masuk'] ?? json['angkatan'])?.toString().trim(),
     );
@@ -44,7 +69,7 @@ class HasilMahasiswa {
     'nama_pt': namaPt,
     if (singkatanPt != null) 'sinkatan_pt': singkatanPt,
     'nama_prodi': namaProdi,
-    'status': status,
+    if (status != null) 'status': status,
     'jenjang': jenjang,
     if (tahunMasuk != null) 'tahun_masuk': tahunMasuk,
   };
@@ -114,6 +139,7 @@ class DetailMahasiswa {
 
   factory DetailMahasiswa.fromJson(Map<String, dynamic> json, {HasilMahasiswa? fallback}) {
     final parsedFromRaw = HasilMahasiswa.fromJson(json);
+    final statusDetail = (json['status_saat_ini'] ?? json['status_mahasiswa'] ?? json['status'] ?? fallback?.status)?.toString().trim();
     final ringkasan = HasilMahasiswa(
       id: parsedFromRaw.id.isNotEmpty ? parsedFromRaw.id : (fallback?.id ?? ''),
       nama: parsedFromRaw.nama.isNotEmpty ? parsedFromRaw.nama : (fallback?.nama ?? ''),
@@ -121,7 +147,7 @@ class DetailMahasiswa {
       namaPt: parsedFromRaw.namaPt.isNotEmpty ? parsedFromRaw.namaPt : (fallback?.namaPt ?? ''),
       singkatanPt: parsedFromRaw.singkatanPt ?? fallback?.singkatanPt,
       namaProdi: parsedFromRaw.namaProdi.isNotEmpty ? parsedFromRaw.namaProdi : (fallback?.namaProdi ?? ''),
-      status: (json['status_saat_ini'] ?? json['status_mahasiswa'] ?? json['status'] ?? fallback?.status ?? 'Aktif').toString().trim(),
+      status: (statusDetail != null && statusDetail.isNotEmpty) ? statusDetail : null,
       jenjang: parsedFromRaw.jenjang.isNotEmpty ? parsedFromRaw.jenjang : (fallback?.jenjang ?? 'Sarjana'),
       tahunMasuk: parsedFromRaw.tahunMasuk ?? fallback?.tahunMasuk,
     );
@@ -163,7 +189,7 @@ class HasilDosen {
     required this.namaPt,
     this.singkatanPt,
     required this.namaProdi,
-    this.status = 'Aktif',
+    this.status,
     this.jabatanAkademik,
     this.pendidikanTertinggi,
   });
@@ -174,11 +200,36 @@ class HasilDosen {
   final String namaPt;
   final String? singkatanPt;
   final String namaProdi;
-  final String status;
+  final String? status;
   final String? jabatanAkademik;
   final String? pendidikanTertinggi;
 
+  HasilDosen copyWith({
+    String? id,
+    String? nama,
+    String? nidn,
+    String? namaPt,
+    String? singkatanPt,
+    String? namaProdi,
+    String? status,
+    String? jabatanAkademik,
+    String? pendidikanTertinggi,
+  }) {
+    return HasilDosen(
+      id: id ?? this.id,
+      nama: nama ?? this.nama,
+      nidn: nidn ?? this.nidn,
+      namaPt: namaPt ?? this.namaPt,
+      singkatanPt: singkatanPt ?? this.singkatanPt,
+      namaProdi: namaProdi ?? this.namaProdi,
+      status: status ?? this.status,
+      jabatanAkademik: jabatanAkademik ?? this.jabatanAkademik,
+      pendidikanTertinggi: pendidikanTertinggi ?? this.pendidikanTertinggi,
+    );
+  }
+
   factory HasilDosen.fromJson(Map<String, dynamic> json) {
+    final rawStatus = (json['status_aktivitas'] ?? json['status'])?.toString().trim();
     return HasilDosen(
       id: (json['id'] ?? json['id_sdm'] ?? '').toString(),
       nama: (json['nama'] ?? json['nama_dosen'] ?? '').toString().trim(),
@@ -186,7 +237,7 @@ class HasilDosen {
       namaPt: (json['nama_pt'] ?? json['pt'] ?? '').toString().trim(),
       singkatanPt: (json['sinkatan_pt'] ?? json['singkatan_pt'])?.toString().trim(),
       namaProdi: (json['nama_prodi'] ?? json['prodi'] ?? '').toString().trim(),
-      status: (json['status_aktivitas'] ?? json['status'] ?? 'Aktif').toString().trim(),
+      status: (rawStatus != null && rawStatus.isNotEmpty) ? rawStatus : null,
       jabatanAkademik: json['jabatan_akademik']?.toString().trim(),
       pendidikanTertinggi: json['pendidikan_tertinggi']?.toString().trim(),
     );
@@ -199,7 +250,7 @@ class HasilDosen {
     'nama_pt': namaPt,
     if (singkatanPt != null) 'sinkatan_pt': singkatanPt,
     'nama_prodi': namaProdi,
-    'status': status,
+    if (status != null) 'status': status,
     if (jabatanAkademik != null) 'jabatan_akademik': jabatanAkademik,
     if (pendidikanTertinggi != null) 'pendidikan_tertinggi': pendidikanTertinggi,
   };
@@ -275,7 +326,7 @@ class DetailDosen {
       namaPt: parsedFromRaw.namaPt.isNotEmpty && parsedFromRaw.namaPt != 'N/A' ? parsedFromRaw.namaPt : (fallback?.namaPt ?? ''),
       singkatanPt: parsedFromRaw.singkatanPt ?? fallback?.singkatanPt,
       namaProdi: parsedFromRaw.namaProdi.isNotEmpty ? parsedFromRaw.namaProdi : (fallback?.namaProdi ?? ''),
-      status: parsedFromRaw.status.isNotEmpty ? parsedFromRaw.status : (fallback?.status ?? 'Aktif'),
+      status: parsedFromRaw.status ?? fallback?.status,
       jabatanAkademik: parsedFromRaw.jabatanAkademik ?? fallback?.jabatanAkademik,
       pendidikanTertinggi: parsedFromRaw.pendidikanTertinggi ?? fallback?.pendidikanTertinggi,
     );

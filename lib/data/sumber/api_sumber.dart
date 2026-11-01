@@ -113,9 +113,60 @@ class ApiSumber {
       final prd = rawPrd.whereType<Map<String, dynamic>>().map(HasilProdi.fromJson).toList();
       final pt = rawPt.whereType<Map<String, dynamic>>().map(Kampus.fromJson).toList();
 
+      // Enrich status mahasiswa & dosen secara paralel agar status akurat (Aktif, Non-Aktif, Lulus, Cuti, dll)
+      final enrichedMhsFuture = Future.wait(
+        mhs.map((item) async {
+          if (item.status != null && item.status!.isNotEmpty) return item;
+          try {
+            final encId = Uri.encodeComponent(item.id);
+            final dRes = await _dio.get<dynamic>(
+              '/detail/mhs/$encId',
+              options: Options(receiveTimeout: const Duration(seconds: 3)),
+            );
+            if (dRes.data is Map<String, dynamic>) {
+              final dMap = (dRes.data as Map<String, dynamic>)['data'] as Map<String, dynamic>?;
+              final st = dMap?['status_saat_ini']?.toString().trim();
+              final jg = dMap?['jenjang']?.toString().trim();
+              return item.copyWith(
+                status: st != null && st.isNotEmpty ? st : null,
+                jenjang: jg != null && jg.isNotEmpty ? jg : item.jenjang,
+              );
+            }
+          } catch (_) {}
+          return item;
+        }),
+      );
+
+      final enrichedDsnFuture = Future.wait(
+        dsn.map((item) async {
+          if (item.status != null && item.status!.isNotEmpty) return item;
+          try {
+            final encId = Uri.encodeComponent(item.id);
+            final dRes = await _dio.get<dynamic>(
+              '/dosen/profile/$encId',
+              options: Options(receiveTimeout: const Duration(seconds: 3)),
+            );
+            if (dRes.data is Map<String, dynamic>) {
+              final dMap = (dRes.data as Map<String, dynamic>)['data'] as Map<String, dynamic>?;
+              final st = dMap?['status_aktivitas']?.toString().trim();
+              final jb = dMap?['jabatan_akademik']?.toString().trim();
+              final pt = dMap?['pendidikan_tertinggi']?.toString().trim();
+              return item.copyWith(
+                status: st != null && st.isNotEmpty ? st : null,
+                jabatanAkademik: jb != null && jb.isNotEmpty ? jb : item.jabatanAkademik,
+                pendidikanTertinggi: pt != null && pt.isNotEmpty ? pt : item.pendidikanTertinggi,
+              );
+            }
+          } catch (_) {}
+          return item;
+        }),
+      );
+
+      final enrichedResults = await Future.wait([enrichedMhsFuture, enrichedDsnFuture]);
+
       return HasilPencarianGlobal(
-        mahasiswa: mhs,
-        dosen: dsn,
+        mahasiswa: enrichedResults[0] as List<HasilMahasiswa>,
+        dosen: enrichedResults[1] as List<HasilDosen>,
         prodi: prd,
         pt: pt,
         dariCache: false,

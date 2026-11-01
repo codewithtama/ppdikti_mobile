@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/format/angka.dart';
+import '../../core/format/status_akademik.dart';
 import '../../core/net/sesi_cloudflare.dart';
 import '../../core/theme/tokens.dart';
 import '../../data/model/kampus.dart';
@@ -693,7 +694,9 @@ class _BarisMahasiswa extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusLulus = mhs.status.toLowerCase() == 'lulus';
+    final statusRaw = mhs.status;
+    final labelStatus = StatusAkademikHelper.ringkasStatus(statusRaw);
+    final warnaBadge = StatusAkademikHelper.warnaTeks(statusRaw);
 
     return InkWell(
       onTap: () {
@@ -717,24 +720,27 @@ class _BarisMahasiswa extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: statusLulus
-                        ? Warna.laut.withValues(alpha: 0.15)
-                        : Warna.kunyit.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: Text(
-                    mhs.status.toUpperCase(),
-                    style: TextStyle(
-                      color: statusLulus ? Warna.laut : Warna.kunyit,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
+                if (labelStatus.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: warnaBadge.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(2),
+                      border: Border.all(
+                        color: warnaBadge.withValues(alpha: 0.6),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      labelStatus,
+                      style: TextStyle(
+                        color: warnaBadge,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
             const SizedBox(height: 4),
@@ -787,6 +793,10 @@ class _BarisDosen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final statusRaw = dsn.status;
+    final labelStatus = StatusAkademikHelper.ringkasStatus(statusRaw);
+    final warnaBadge = StatusAkademikHelper.warnaTeks(statusRaw);
+
     return InkWell(
       onTap: () {
         context.push('/dosen/${dsn.id}', extra: dsn);
@@ -809,22 +819,27 @@ class _BarisDosen extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Warna.laut.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: Text(
-                    dsn.status.toUpperCase(),
-                    style: const TextStyle(
-                      color: Warna.laut,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
+                if (labelStatus.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: warnaBadge.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(2),
+                      border: Border.all(
+                        color: warnaBadge.withValues(alpha: 0.6),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      labelStatus,
+                      style: TextStyle(
+                        color: warnaBadge,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
             const SizedBox(height: 4),
