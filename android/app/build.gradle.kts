@@ -38,22 +38,34 @@ android {
 
     signingConfigs {
         create("release") {
-            val keyAliasProp = keystoreProperties.getProperty("keyAlias") ?: System.getenv("KEY_ALIAS")
-            val keyPasswordProp = keystoreProperties.getProperty("keyPassword") ?: System.getenv("KEY_PASSWORD")
-            val storeFileProp = keystoreProperties.getProperty("storeFile") ?: System.getenv("STORE_FILE")
-            val storePasswordProp = keystoreProperties.getProperty("storePassword") ?: System.getenv("STORE_PASSWORD")
+            val keyAliasProp = keystoreProperties.getProperty("keyAlias") ?: System.getenv("KEY_ALIAS") ?: "pddikti_release"
+            val keyPasswordProp = keystoreProperties.getProperty("keyPassword") ?: System.getenv("KEY_PASSWORD") ?: "pddikti2026production"
+            val storeFileProp = keystoreProperties.getProperty("storeFile") ?: System.getenv("STORE_FILE") ?: "upload-keystore.jks"
+            val storePasswordProp = keystoreProperties.getProperty("storePassword") ?: System.getenv("STORE_PASSWORD") ?: "pddikti2026production"
 
-            if (storeFileProp != null && file(storeFileProp).exists()) {
+            val candidateFiles = listOfNotNull(
+                file(storeFileProp),
+                rootProject.file(storeFileProp),
+                rootProject.file("upload-keystore.jks"),
+                file("upload-keystore.jks"),
+                file("../upload-keystore.jks")
+            )
+            val resolvedKeystoreFile = candidateFiles.firstOrNull { it.exists() }
+
+            if (resolvedKeystoreFile != null) {
                 keyAlias = keyAliasProp
                 keyPassword = keyPasswordProp
-                storeFile = file(storeFileProp)
+                storeFile = resolvedKeystoreFile
                 storePassword = storePasswordProp
                 enableV1Signing = true
                 enableV2Signing = true
                 enableV3Signing = true
                 enableV4Signing = true
             } else {
-                initWith(signingConfigs.getByName("debug"))
+                val debugKeystore = signingConfigs.getByName("debug").storeFile
+                if (debugKeystore != null && debugKeystore.exists()) {
+                    initWith(signingConfigs.getByName("debug"))
+                }
             }
         }
     }

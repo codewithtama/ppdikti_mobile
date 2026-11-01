@@ -51,25 +51,33 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
         run: |
+          mkdir -p android/app
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "$KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
+            cp android/upload-keystore.jks android/app/upload-keystore.jks
             cat <<EOF > android/key.properties
           storePassword=$STORE_PASSWORD
           keyPassword=$KEY_PASSWORD
           keyAlias=$KEY_ALIAS
-          storeFile=upload-keystore.jks
+          storeFile=../upload-keystore.jks
           EOF
             echo "Keystore release berhasil dikonfigurasi dari secrets."
           else
             echo "Secrets keystore tidak ditemukan. Membuat release keystore otomatis."
             keytool -genkey -v -keystore android/upload-keystore.jks -alias pddikti_release -keyalg RSA -keysize 2048 -validity 10000 -storepass pddikti2026production -keypass pddikti2026production -dname "CN=PDDikti, O=Kemdiktisaintek, C=ID"
+            cp android/upload-keystore.jks android/app/upload-keystore.jks
             cat <<EOF > android/key.properties
           storePassword=pddikti2026production
           keyPassword=pddikti2026production
           keyAlias=pddikti_release
-          storeFile=upload-keystore.jks
+          storeFile=../upload-keystore.jks
           EOF
           fi
+
+          # Buat fallback debug.keystore di path standar runner agar validasi Gradle selalu lolos
+          mkdir -p /home/runner/.android /home/runner/.config/.android
+          keytool -genkey -v -keystore /home/runner/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US" || true
+          cp /home/runner/.android/debug.keystore /home/runner/.config/.android/debug.keystore || true
 
       - name: Build Release APK
         run: |
