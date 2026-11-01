@@ -1,7 +1,7 @@
 name: pddikti_mobile
 description: "PDDikti Mobile Client"
 publish_to: 'none'
-version: 1.0.1+2
+version: 1.0.2+3
 
 environment:
   sdk: ^3.11.5
@@ -25,6 +25,8 @@ dependencies:
   package_info_plus: ^10.2.2
   open_filex: ^5.0.0
   crypto: ^3.0.8
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
 
 dev_dependencies:
   flutter_test:

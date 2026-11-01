@@ -994,6 +994,12 @@ class _BarisKampusItem extends StatelessWidget {
                 ],
               ),
             ),
+            if (kampus.koordinat != null)
+              IconButton(
+                icon: const Icon(PhosphorIconsRegular.mapPin, size: 18, color: Warna.kunyit),
+                tooltip: 'Lihat di peta',
+                onPressed: () => context.push('/peta?kode=${kampus.kode}'),
+              ),
             const Icon(PhosphorIconsRegular.caretRight, size: 16, color: Warna.kapurRedup),
           ],
         ),

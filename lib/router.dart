@@ -70,7 +70,10 @@ GoRouter buatRouter({bool sudahSetuju = false}) {
       GoRoute(
         path: '/peta',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const PetaPenuhLayar(),
+        builder: (context, state) {
+          final kode = state.uri.queryParameters['kode'];
+          return PetaPenuhLayar(fokusKode: kode);
+        },
       ),
       GoRoute(
         path: '/kampus/:kode',

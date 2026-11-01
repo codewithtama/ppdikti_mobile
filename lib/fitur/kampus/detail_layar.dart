@@ -2,6 +2,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/format/angka.dart';
 import '../../core/theme/tokens.dart';
@@ -80,6 +82,14 @@ class DetailKampusLayar extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail Kampus'),
+        actions: [
+          if (k != null)
+            IconButton(
+              icon: const Icon(PhosphorIconsRegular.navigationArrow),
+              tooltip: 'Buka di Google Maps',
+              onPressed: () => _bukaPeta(k.lintang, k.bujur, kampus.nama),
+            ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
@@ -196,47 +206,75 @@ class DetailKampusLayar extends ConsumerWidget {
           if (k == null) ...[
             Text('Lokasi belum diisi oleh kampus.', style: Gaya.isi.copyWith(color: Warna.kapurRedup)),
           ] else ...[
-            // Peta mini 120dp tidak interaktif dengan titik kunyit & cincin
-            Container(
-              height: 120,
-              width: double.infinity,
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                color: Warna.tintaAngkat,
-                border: Border.all(color: Warna.garis, width: 1),
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final centerPt = GridKetuk.proyeksikan(k.lintang, k.bujur);
-                  final canvasX = centerPt.x * constraints.maxWidth;
-                  final canvasY = centerPt.y * constraints.maxWidth;
-
-                  const skala = 5.0;
-                  final tx = (constraints.maxWidth / 2) - (canvasX * skala);
-                  final ty = (constraints.maxHeight / 2) - (canvasY * skala);
-
-                  final kontrol = TransformationController(
-                    Matrix4.translationValues(tx, ty, 0.0)
-                      ..scaleByDouble(skala, skala, 1.0, 1.0),
-                  );
-
-                  final titikBuffer = dataParsed?.titikBiasaBuffer ?? Float32List(0);
-                  final titikSorot = Float32List(2)
-                    ..[0] = centerPt.x
-                    ..[1] = centerPt.y;
-
-                  return CustomPaint(
-                    painter: PetaTitikPainter(
-                      pathIndonesia: pathIndonesiaAsync.value,
-                      redup: titikBuffer,
-                      sorot: titikSorot,
-                      kontrol: kontrol,
-                      sapuan: const AlwaysStoppedAnimation(1.0),
-                      adaFilter: true,
-                      cincinTunggal: Offset(centerPt.x, centerPt.y),
+            // Peta mini interaktif dengan navigasi ke /peta?kode=...
+            InkWell(
+              onTap: () => context.push('/peta?kode=${kampus.kode}'),
+              child: Stack(
+                children: [
+                  Container(
+                    height: 130,
+                    width: double.infinity,
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      color: Warna.tintaAngkat,
+                      border: Border.all(color: Warna.garis, width: 1),
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                  );
-                },
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final centerPt = GridKetuk.proyeksikan(k.lintang, k.bujur);
+                        final canvasX = centerPt.x * constraints.maxWidth;
+                        final canvasY = centerPt.y * constraints.maxWidth;
+
+                        const skala = 5.0;
+                        final tx = (constraints.maxWidth / 2) - (canvasX * skala);
+                        final ty = (constraints.maxHeight / 2) - (canvasY * skala);
+
+                        final kontrol = TransformationController(
+                          Matrix4.translationValues(tx, ty, 0.0)
+                            ..scaleByDouble(skala, skala, 1.0, 1.0),
+                        );
+
+                        final titikBuffer = dataParsed?.titikBiasaBuffer ?? Float32List(0);
+                        final titikSorot = Float32List(2)
+                          ..[0] = centerPt.x
+                          ..[1] = centerPt.y;
+
+                        return CustomPaint(
+                          painter: PetaTitikPainter(
+                            pathIndonesia: pathIndonesiaAsync.value,
+                            redup: titikBuffer,
+                            sorot: titikSorot,
+                            kontrol: kontrol,
+                            sapuan: const AlwaysStoppedAnimation(1.0),
+                            adaFilter: true,
+                            cincinTunggal: Offset(centerPt.x, centerPt.y),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    right: 8,
+                    bottom: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Warna.tinta.withValues(alpha: 0.85),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: Warna.kunyit, width: 1),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(PhosphorIconsRegular.cornersOut, color: Warna.kunyit, size: 12),
+                          SizedBox(width: 4),
+                          Text('Buka Peta Interaktif', style: TextStyle(color: Warna.kunyit, fontSize: 11, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 8),
@@ -260,9 +298,10 @@ class DetailKampusLayar extends ConsumerWidget {
             children: [
               if (k != null) ...[
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _bukaPeta(k.lintang, k.bujur, kampus.nama),
-                    child: const Text('Buka di aplikasi peta'),
+                  child: OutlinedButton.icon(
+                    icon: const Icon(PhosphorIconsRegular.mapPin, size: 16),
+                    onPressed: () => context.push('/peta?kode=${kampus.kode}'),
+                    label: const Text('Buka di peta'),
                   ),
                 ),
                 const SizedBox(width: 12),
