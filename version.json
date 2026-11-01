@@ -1,14 +1,12 @@
 {
-  "version": "1.0.6",
-  "build_number": 7,
+  "version": "1.0.7",
+  "build_number": 8,
   "release_date": "2026-11-01",
   "changelog": [
-    "Thumbnail Publikasi Resmi dengan desain sampul digital & gradien tahun",
-    "Logo Resmi Perguruan Tinggi dari CDN PDDikti dengan fallback inisial",
-    "Profil Lengkap Kampus: Biaya Kuliah, No/Tgl SK Pendirian, Akreditasi, Kontak resmi & Google Maps",
-    "Filter Kampus Komprehensif: Jenis (PTN, PTS, PTKL, PTA), 38 Provinsi, Akreditasi, dan Status Keaktifan"
+    "Pengujian pembaruan sistem OTA otomatis (Over-The-Air)",
+    "Optimalisasi kestabilan performa dan deteksi versi real-time"
   ],
-  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.6/app-release.apk",
-  "sha256": "4823bad5a5f237e16e1e7896245f4692eed623885e8d789328bdb8dae3215285",
+  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.7/app-release.apk",
+  "sha256": "8c5d78b018eed179f86bd85a6cf3182bcd5445d98b529f99aa90c7bd3a8dc28e",
   "force_update": false
 }
