@@ -9,6 +9,7 @@ import 'fitur/kabar/kabar_layar.dart';
 import 'fitur/kampus/detail_layar.dart';
 import 'fitur/kampus/kampus_layar.dart';
 import 'fitur/ketentuan/ketentuan_layar.dart';
+import 'fitur/komparasi/komparasi_layar.dart';
 import 'fitur/pencarian/detail_dosen_layar.dart';
 import 'fitur/pencarian/detail_mahasiswa_layar.dart';
 import 'fitur/pencarian/detail_prodi_layar.dart';
@@ -124,6 +125,11 @@ GoRouter buatRouter({bool sudahSetuju = false}) {
         path: '/tentang',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const TentangLayar(),
+      ),
+      GoRoute(
+        path: '/komparasi',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const KomparasiLayar(),
       ),
     ],
   );

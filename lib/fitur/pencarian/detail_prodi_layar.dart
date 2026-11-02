@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/theme/tokens.dart';
 import '../../data/model/pencarian_global.dart';
+import '../komparasi/komparasi_vm.dart';
 
-class DetailProdiLayar extends StatelessWidget {
+class DetailProdiLayar extends ConsumerWidget {
   const DetailProdiLayar({
     super.key,
     required this.id,
@@ -14,7 +17,10 @@ class DetailProdiLayar extends StatelessWidget {
   final HasilProdi prodi;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stateKomparasi = ref.watch(komparasiProvider);
+    final sudahDipilih = stateKomparasi.apakahProdiAda(prodi.id);
+
     return Scaffold(
       backgroundColor: Warna.tinta,
       appBar: AppBar(
@@ -26,6 +32,31 @@ class DetailProdiLayar extends StatelessWidget {
           icon: const Icon(PhosphorIconsRegular.arrowLeft),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              sudahDipilih ? PhosphorIconsFill.checkCircle : PhosphorIconsRegular.scales,
+              color: sudahDipilih ? Warna.kunyit : Warna.kapur,
+            ),
+            tooltip: sudahDipilih ? 'Hapus dari komparasi' : 'Bandingkan Prodi',
+            onPressed: () {
+              final berhasil = ref.read(komparasiProvider.notifier).tambahProdi(prodi);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(berhasil
+                      ? '${prodi.nama} ditambahkan ke komparasi'
+                      : '${prodi.nama} dihapus dari komparasi'),
+                  duration: const Duration(seconds: 2),
+                  action: SnackBarAction(
+                    label: 'Lihat',
+                    textColor: Warna.kunyit,
+                    onPressed: () => context.push('/komparasi'),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -138,6 +169,46 @@ class DetailProdiLayar extends StatelessWidget {
                     _BarisInfoProdi(label: 'Rasio Dosen / Mhs', nilai: prodi.rasioDosenMahasiswa!),
                   ],
                 ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+              child: OutlinedButton.icon(
+                icon: Icon(
+                  sudahDipilih ? PhosphorIconsFill.checkCircle : PhosphorIconsRegular.scales,
+                  size: 18,
+                  color: Warna.kunyit,
+                ),
+                label: Text(
+                  sudahDipilih
+                      ? 'Sedang Dibandingkan (Buka Komparasi)'
+                      : 'Bandingkan Program Studi Ini',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Warna.kunyit,
+                  side: const BorderSide(color: Warna.kunyit, width: 1.2),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                onPressed: () {
+                  if (sudahDipilih) {
+                    context.push('/komparasi');
+                  } else {
+                    ref.read(komparasiProvider.notifier).tambahProdi(prodi);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${prodi.nama} ditambahkan ke komparasi'),
+                        duration: const Duration(seconds: 2),
+                        action: SnackBarAction(
+                          label: 'Lihat',
+                          textColor: Warna.kunyit,
+                          onPressed: () => context.push('/komparasi'),
+                        ),
+                      ),
+                    );
+                  }
+                },
               ),
             ),
 

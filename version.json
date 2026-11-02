@@ -1,14 +1,14 @@
 {
-  "version": "1.0.8",
-  "build_number": 9,
-  "release_date": "2026-11-01",
+  "version": "1.0.9",
+  "build_number": 10,
+  "release_date": "2026-11-02",
   "changelog": [
-    "Daftar Program Studi resmi lengkap dengan filter jenjang dan pencarian nama prodi di Detail Kampus",
-    "Informasi Rasio Dosen : Mahasiswa dan Total Jumlah Program Studi pada profil perguruan tinggi",
-    "Fitur Ekspor Dokumen PDF Resmi berkop Kemdiktisaintek PDDikti untuk profil Mahasiswa & Dosen",
-    "Fitur Bagikan Ringkasan Terverifikasi langsung ke WhatsApp dan media sosial"
+    "Fitur Komparasi Kampus & Prodi Berdampingan: Bandingkan hingga 3 perguruan tinggi atau program studi sekaligus dalam matriks akreditasi, rasio dosen-mahasiswa, biaya kuliah, dan wilayah",
+    "Bar Komparasi Melayang Interaktif: Tambah atau hapus pilihan komparasi langsung dari kartu direktori dan detail prodi",
+    "Fitur Kartu Identitas Digital Mahasiswa & Dosen: Kartu digital resmi berstandar CR80 berkop Kemdiktisaintek PDDikti dengan QR Code verifikasi langsung",
+    "Dukungan Balik Kartu & Simpan/Bagikan Gambar PNG Ultra HD ke WhatsApp dan media sosial"
   ],
-  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.8/app-release.apk",
-  "sha256": "99d85476fc34ab369c0710cb0b0da3bc3be4c1f80f2216363c9fe2c4ce5fb43a",
+  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.0.9/app-release.apk",
+  "sha256": "5204fa3ba880c552743497ad846b9c226e795ca5b7633cc57adbb83457123323",
   "force_update": false
 }

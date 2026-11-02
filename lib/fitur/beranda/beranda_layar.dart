@@ -10,6 +10,7 @@ import '../../core/ota/model_pembaruan.dart';
 import '../../core/ota/sheet_pembaruan.dart';
 import '../../core/theme/tokens.dart';
 import '../kampus/kampus_vm.dart';
+import '../komparasi/komparasi_vm.dart';
 import '../pencarian/pencarian_vm.dart';
 import 'beranda_vm.dart';
 import 'bidang_ilmu_tabel.dart';
@@ -85,6 +86,17 @@ class _BerandaLayarState extends ConsumerState<BerandaLayar> {
                 );
               },
             ),
+          IconButton(
+            icon: Badge(
+              isLabelVisible: ref.watch(komparasiProvider).totalSemuaItem > 0,
+              label: Text('${ref.watch(komparasiProvider).totalSemuaItem}'),
+              backgroundColor: Warna.kunyit,
+              textColor: Warna.tinta,
+              child: const Icon(PhosphorIconsRegular.scales, size: 22),
+            ),
+            tooltip: 'Komparasi Kampus & Prodi',
+            onPressed: () => context.push('/komparasi'),
+          ),
           IconButton(
             icon: const Icon(Icons.info_outline, size: 22),
             tooltip: 'Tentang aplikasi',

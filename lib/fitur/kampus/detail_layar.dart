@@ -13,6 +13,7 @@ import '../../data/model/kelulusan.dart';
 import '../../data/repo/kampus_repo.dart';
 import '../beranda/peta/grid_ketuk.dart';
 import '../beranda/peta/peta_painter.dart';
+import '../komparasi/komparasi_vm.dart';
 import 'detail_vm.dart';
 import 'kampus_vm.dart';
 import 'logo_kampus.dart';
@@ -138,6 +139,39 @@ class DetailKampusLayar extends ConsumerWidget {
               tooltip: 'Buka di Google Maps',
               onPressed: () => _bukaGoogleMaps(k.lintang, k.bujur, kampus.nama),
             ),
+          IconButton(
+            icon: Icon(
+              ref.watch(komparasiProvider).apakahKampusAda(kode)
+                  ? PhosphorIconsFill.checkCircle
+                  : PhosphorIconsRegular.scales,
+              color: ref.watch(komparasiProvider).apakahKampusAda(kode)
+                  ? Warna.kunyit
+                  : Warna.kapur,
+            ),
+            tooltip: 'Bandingkan Kampus',
+            onPressed: () {
+              final d = profilAsync.value ??
+                  DetailKampus(
+                    idSp: kampus.idSp,
+                    kode: kampus.kode,
+                    nama: kampus.nama,
+                  );
+              final berhasil = ref.read(komparasiProvider.notifier).tambahDariDetail(d);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(berhasil
+                      ? '${kampus.nama} ditambahkan ke komparasi'
+                      : '${kampus.nama} dihapus dari komparasi'),
+                  duration: const Duration(seconds: 2),
+                  action: SnackBarAction(
+                    label: 'Lihat',
+                    textColor: Warna.kunyit,
+                    onPressed: () => context.push('/komparasi'),
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
       body: profilAsync.when(
@@ -695,7 +729,51 @@ class DetailKampusLayar extends ConsumerWidget {
         ),
         const SizedBox(height: 24),
 
-        // 8. Tombol Aksi Bawah
+        // 8. Tombol Komparasi
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            icon: Icon(
+              ref.watch(komparasiProvider).apakahKampusAda(detail.kode)
+                  ? PhosphorIconsFill.checkCircle
+                  : PhosphorIconsRegular.scales,
+              size: 18,
+              color: Warna.kunyit,
+            ),
+            label: Text(
+              ref.watch(komparasiProvider).apakahKampusAda(detail.kode)
+                  ? 'Sedang Dibandingkan (Buka Komparasi)'
+                  : 'Bandingkan Kampus Ini',
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Warna.kunyit,
+              side: const BorderSide(color: Warna.kunyit, width: 1.2),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
+            onPressed: () {
+              if (ref.read(komparasiProvider).apakahKampusAda(detail.kode)) {
+                context.push('/komparasi');
+              } else {
+                ref.read(komparasiProvider.notifier).tambahDariDetail(detail);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${detail.nama} ditambahkan ke komparasi'),
+                    duration: const Duration(seconds: 2),
+                    action: SnackBarAction(
+                      label: 'Bandingkan',
+                      textColor: Warna.kunyit,
+                      onPressed: () => context.push('/komparasi'),
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // 9. Tombol Aksi Bawah (Salin & Peta)
         Row(
           children: [
             Expanded(

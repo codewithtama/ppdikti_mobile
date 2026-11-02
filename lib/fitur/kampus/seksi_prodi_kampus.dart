@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/theme/tokens.dart';
+import '../komparasi/komparasi_vm.dart';
 import 'detail_vm.dart';
 
 class SeksiProdiKampus extends ConsumerStatefulWidget {
@@ -388,7 +389,39 @@ class _SeksiProdiKampusState extends ConsumerState<SeksiProdiKampus> {
                                     ],
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 4),
+                                IconButton(
+                                  icon: Icon(
+                                    ref.watch(komparasiProvider).apakahProdiAda(prodi.id)
+                                        ? PhosphorIconsFill.checkCircle
+                                        : PhosphorIconsRegular.plus,
+                                    size: 18,
+                                    color: ref.watch(komparasiProvider).apakahProdiAda(prodi.id)
+                                        ? Warna.kunyit
+                                        : Warna.kapurRedup,
+                                  ),
+                                  tooltip: 'Bandingkan prodi ini',
+                                  visualDensity: VisualDensity.compact,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  onPressed: () {
+                                    final berhasil = ref.read(komparasiProvider.notifier).tambahProdi(prodi);
+                                    if (berhasil) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('${prodi.nama} ditambahkan ke komparasi'),
+                                          duration: const Duration(seconds: 2),
+                                          action: SnackBarAction(
+                                            label: 'Lihat',
+                                            textColor: Warna.kunyit,
+                                            onPressed: () => context.push('/komparasi'),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                                const SizedBox(width: 6),
                                 const Icon(
                                   PhosphorIconsRegular.caretRight,
                                   color: Warna.kapurRedup,

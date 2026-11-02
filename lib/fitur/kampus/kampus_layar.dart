@@ -12,6 +12,8 @@ import '../../data/model/pencarian_global.dart';
 import '../../data/repo/kampus_repo.dart';
 import '../pencarian/pencarian_vm.dart';
 import '../pencarian/verifikasi_cloudflare_sheet.dart';
+import '../komparasi/bar_komparasi_melayang.dart';
+import '../komparasi/komparasi_vm.dart';
 import 'filter_sheet.dart';
 import 'kampus_vm.dart';
 import 'logo_kampus.dart';
@@ -125,11 +127,24 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
               tooltip: 'Buka Peta Kampus',
               onPressed: () => context.push('/peta'),
             ),
+          IconButton(
+            icon: Badge(
+              isLabelVisible: ref.watch(komparasiProvider).totalSemuaItem > 0,
+              label: Text('${ref.watch(komparasiProvider).totalSemuaItem}'),
+              backgroundColor: Warna.kunyit,
+              textColor: Warna.tinta,
+              child: const Icon(PhosphorIconsRegular.scales),
+            ),
+            tooltip: 'Buka Komparasi Berdampingan',
+            onPressed: () => context.push('/komparasi'),
+          ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Stack(
         children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
           // Banner Verifikasi Cloudflare (jika dibutuhkan)
           if (statePencarian.butuhVerifikasi && !sesiCloudflare.terverifikasi)
             Container(
@@ -342,7 +357,15 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
           ),
         ],
       ),
-    );
+      const Positioned(
+        left: 0,
+        right: 0,
+        bottom: 0,
+        child: BarKomparasiMelayang(),
+      ),
+    ],
+  ),
+);
   }
 
   String _getHintText(KategoriPencarian kat) {
@@ -885,76 +908,114 @@ class _BarisDosen extends StatelessWidget {
   }
 }
 
-class _BarisProdi extends StatelessWidget {
+class _BarisProdi extends ConsumerWidget {
   const _BarisProdi({required this.prodi});
   final HasilProdi prodi;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stateKomparasi = ref.watch(komparasiProvider);
+    final sudahDipilih = stateKomparasi.apakahProdiAda(prodi.id);
+
     return InkWell(
       onTap: () {
         context.push('/prodi/${prodi.id}', extra: prodi);
       },
       child: Container(
         color: Warna.tinta,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Warna.garis,
-                    borderRadius: BorderRadius.circular(2),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Warna.garis,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        child: Text(
+                          prodi.jenjang,
+                          style: const TextStyle(
+                            color: Warna.kunyit,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          prodi.nama,
+                          style: const TextStyle(
+                            color: Warna.kapur,
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Warna.laut.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        child: Text(
+                          prodi.akreditasi,
+                          style: const TextStyle(
+                            color: Warna.laut,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    prodi.jenjang,
+                  const SizedBox(height: 4),
+                  Text(
+                    prodi.pt,
                     style: const TextStyle(
-                      color: Warna.kunyit,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
+                      color: Warna.kapurRedup,
+                      fontSize: 12.5,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    prodi.nama,
-                    style: const TextStyle(
-                      color: Warna.kapur,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Warna.laut.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: Text(
-                    prodi.akreditasi,
-                    style: const TextStyle(
-                      color: Warna.laut,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              prodi.pt,
-              style: const TextStyle(
-                color: Warna.kapurRedup,
-                fontSize: 13,
+                ],
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: Icon(
+                sudahDipilih ? PhosphorIconsFill.checkCircle : PhosphorIconsRegular.plus,
+                size: 20,
+                color: sudahDipilih ? Warna.kunyit : Warna.kapurRedup,
+              ),
+              tooltip: sudahDipilih ? 'Hapus dari komparasi' : 'Bandingkan prodi ini',
+              visualDensity: VisualDensity.compact,
+              onPressed: () {
+                final berhasil = ref.read(komparasiProvider.notifier).tambahProdi(prodi);
+                if (berhasil) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${prodi.nama} ditambahkan ke komparasi'),
+                      duration: const Duration(seconds: 2),
+                      action: SnackBarAction(
+                        label: 'Lihat',
+                        textColor: Warna.kunyit,
+                        onPressed: () => context.push('/komparasi'),
+                      ),
+                    ),
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -963,7 +1024,7 @@ class _BarisProdi extends StatelessWidget {
   }
 }
 
-class _BarisKampusItem extends StatelessWidget {
+class _BarisKampusItem extends ConsumerWidget {
   const _BarisKampusItem({required this.kampus});
   final Kampus kampus;
 
@@ -977,7 +1038,9 @@ class _BarisKampusItem extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stateKomparasi = ref.watch(komparasiProvider);
+    final sudahDipilih = stateKomparasi.apakahKampusAda(kampus.kode);
     final statusColor = _warnaStatus(kampus.status);
     final lokasi = [
       kampus.kota,
@@ -1109,7 +1172,7 @@ class _BarisKampusItem extends StatelessWidget {
               const Divider(color: Warna.garis, height: 1),
               const SizedBox(height: 8),
 
-              // Baris Aksi Bawah: Lihat Detail & Pin Peta
+              // Baris Aksi Bawah: Lihat Detail, Tombol Komparasi (+), & Pin Peta
               Row(
                 children: [
                   Expanded(
@@ -1124,6 +1187,36 @@ class _BarisKampusItem extends StatelessWidget {
                       ),
                       child: const Text('Lihat Detail', style: TextStyle(fontSize: 12.5)),
                     ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton.outlined(
+                    icon: Icon(
+                      sudahDipilih ? PhosphorIconsFill.check : PhosphorIconsRegular.plus,
+                      size: 16,
+                      color: sudahDipilih ? Warna.tinta : Warna.kunyit,
+                    ),
+                    tooltip: sudahDipilih ? 'Hapus dari komparasi' : 'Bandingkan kampus ini',
+                    style: IconButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      backgroundColor: sudahDipilih ? Warna.kunyit : Colors.transparent,
+                      side: BorderSide(color: sudahDipilih ? Warna.kunyit : Warna.garisTegas),
+                    ),
+                    onPressed: () {
+                      final berhasil = ref.read(komparasiProvider.notifier).tambahKampus(kampus);
+                      if (berhasil) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${kampus.nama} ditambahkan ke komparasi'),
+                            duration: const Duration(seconds: 2),
+                            action: SnackBarAction(
+                              label: 'Lihat',
+                              textColor: Warna.kunyit,
+                              onPressed: () => context.push('/komparasi'),
+                            ),
+                          ),
+                        );
+                      }
+                    },
                   ),
                   if (kampus.koordinat != null) ...[
                     const SizedBox(width: 8),
