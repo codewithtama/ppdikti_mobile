@@ -618,3 +618,4 @@ class _KomparasiLayarState extends ConsumerState<KomparasiLayar> {
     );
   }
 }
+

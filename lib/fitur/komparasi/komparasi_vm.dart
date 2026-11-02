@@ -107,3 +107,4 @@ class KomparasiNotifier extends StateNotifier<KomparasiState> {
 final komparasiProvider = StateNotifierProvider<KomparasiNotifier, KomparasiState>((ref) {
   return KomparasiNotifier(ref);
 });
+

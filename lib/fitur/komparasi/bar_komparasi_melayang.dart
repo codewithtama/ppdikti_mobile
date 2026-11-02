@@ -141,3 +141,4 @@ class BarKomparasiMelayang extends ConsumerWidget {
     );
   }
 }
+
