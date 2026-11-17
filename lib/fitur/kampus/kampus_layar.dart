@@ -12,6 +12,7 @@ import '../../data/model/pencarian_global.dart';
 import '../../data/repo/kampus_repo.dart';
 import '../pencarian/pencarian_vm.dart';
 import '../pencarian/verifikasi_cloudflare_sheet.dart';
+import '../favorit/favorit_vm.dart';
 import '../komparasi/bar_komparasi_melayang.dart';
 import '../komparasi/komparasi_vm.dart';
 import 'filter_sheet.dart';
@@ -129,6 +130,17 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
             ),
           IconButton(
             icon: Badge(
+              isLabelVisible: ref.watch(favoritProvider).isNotEmpty,
+              label: Text('${ref.watch(favoritProvider).length}'),
+              backgroundColor: Warna.laut,
+              textColor: Warna.tinta,
+              child: const Icon(PhosphorIconsRegular.bookmarkSimple),
+            ),
+            tooltip: 'Tersimpan & Favorit',
+            onPressed: () => context.push('/favorit'),
+          ),
+          IconButton(
+            icon: Badge(
               isLabelVisible: ref.watch(komparasiProvider).totalSemuaItem > 0,
               label: Text('${ref.watch(komparasiProvider).totalSemuaItem}'),
               backgroundColor: Warna.kunyit,
@@ -145,8 +157,8 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-          // Banner Verifikasi Cloudflare (jika dibutuhkan)
-          if (statePencarian.butuhVerifikasi && !sesiCloudflare.terverifikasi)
+          // Banner Verifikasi Keamanan PDDikti (jika dibutuhkan)
+          if (statePencarian.butuhVerifikasi)
             Container(
               margin: const EdgeInsets.fromLTRB(16, 6, 16, 6),
               padding: const EdgeInsets.all(12),
@@ -164,7 +176,7 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
                       const SizedBox(width: 8),
                       const Expanded(
                         child: Text(
-                          'Verifikasi Cloudflare Diperlukan',
+                          'Verifikasi CAPTCHA Diperlukan',
                           style: TextStyle(
                             color: Warna.kapur,
                             fontWeight: FontWeight.w700,
@@ -188,7 +200,7 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
                             borderRadius: BorderRadius.circular(2),
                           ),
                           child: const Text(
-                            'Verifikasi (1x)',
+                            'Verifikasi CAPTCHA',
                             style: TextStyle(
                               color: Warna.tinta,
                               fontWeight: FontWeight.w700,
@@ -201,7 +213,7 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
                   ),
                   const SizedBox(height: 6),
                   const Text(
-                    'Server resmi PDDikti meminta verifikasi bot (Turnstile). Selesaikan verifikasi sekali agar Anda bisa mencari data mahasiswa dan dosen secara langsung.',
+                    'Server resmi PDDikti mewajibkan verifikasi reCAPTCHA untuk pencarian Mahasiswa, Dosen, & Prodi. Selesaikan CAPTCHA agar hasil tampil langsung di aplikasi.',
                     style: TextStyle(color: Warna.kapurRedup, fontSize: 11, height: 1.35),
                   ),
                 ],
@@ -215,6 +227,10 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
               controller: _textController,
               focusNode: _focusNode,
               onChanged: _onQueryChanged,
+              onSubmitted: (val) {
+                ref.read(riwayatPencarianProvider.notifier).tambah(val);
+              },
+              textInputAction: TextInputAction.search,
               decoration: InputDecoration(
                 hintText: _getHintText(kategori),
                 prefixIcon: const Icon(PhosphorIconsRegular.magnifyingGlass, size: 20, color: Warna.kapurRedup),
@@ -430,6 +446,8 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
   }
 
   Widget _buildStateAwal(KategoriPencarian kat) {
+    final riwayat = ref.watch(riwayatPencarianProvider);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -453,6 +471,58 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
               height: 1.4,
             ),
           ),
+          if (riwayat.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Riwayat pencarian terakhir:',
+                  style: TextStyle(
+                    color: Warna.kapur,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                InkWell(
+                  onTap: () => ref
+                      .read(riwayatPencarianProvider.notifier)
+                      .bersihkanSemua(),
+                  child: const Text(
+                    'Hapus Semua',
+                    style: TextStyle(
+                      color: Warna.kunyit,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: riwayat.map((q) {
+                return InputChip(
+                  label: Text(
+                    q,
+                    style: const TextStyle(color: Warna.kapur, fontSize: 12),
+                  ),
+                  backgroundColor: Warna.tintaAngkat,
+                  side: const BorderSide(color: Warna.garis),
+                  deleteIcon: const Icon(
+                    PhosphorIconsRegular.x,
+                    size: 14,
+                    color: Warna.kapurRedup,
+                  ),
+                  onPressed: () => _pilihSaran(q),
+                  onDeleted: () =>
+                      ref.read(riwayatPencarianProvider.notifier).hapus(q),
+                );
+              }).toList(),
+            ),
+          ],
           const SizedBox(height: 24),
           const Text(
             'Contoh pencarian populer:',
@@ -483,18 +553,22 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
 
   void _pilihSaran(String teks) {
     _textController.text = teks;
+    ref.read(riwayatPencarianProvider.notifier).tambah(teks);
     _onQueryChanged(teks);
   }
 
   Widget _buildDaftarMahasiswa(List<HasilMahasiswa> list) {
     if (list.isEmpty) {
-      return const Center(
+      final butuhVerif = ref.read(pencarianGlobalProvider).butuhVerifikasi;
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Text(
-            'Mahasiswa tidak ditemukan.\nPeriksa ejaan nama atau Nomor Induk Mahasiswa (NIM).',
+            butuhVerif
+                ? 'Memerlukan verifikasi CAPTCHA PDDikti.\nKetuk tombol "Verifikasi CAPTCHA" di atas untuk mencari Mahasiswa di aplikasi.'
+                : 'Mahasiswa tidak ditemukan.\nPeriksa ejaan nama atau Nomor Induk Mahasiswa (NIM).',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Warna.kapurRedup, height: 1.4),
+            style: const TextStyle(color: Warna.kapurRedup, height: 1.4),
           ),
         ),
       );
@@ -512,13 +586,16 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
 
   Widget _buildDaftarDosen(List<HasilDosen> list) {
     if (list.isEmpty) {
-      return const Center(
+      final butuhVerif = ref.read(pencarianGlobalProvider).butuhVerifikasi;
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Text(
-            'Dosen tidak ditemukan.\nPeriksa ejaan nama dosen atau NIDN/NUP.',
+            butuhVerif
+                ? 'Memerlukan verifikasi CAPTCHA PDDikti.\nKetuk tombol "Verifikasi CAPTCHA" di atas untuk mencari Dosen di aplikasi.'
+                : 'Dosen tidak ditemukan.\nPeriksa ejaan nama dosen atau NIDN/NUP.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Warna.kapurRedup, height: 1.4),
+            style: const TextStyle(color: Warna.kapurRedup, height: 1.4),
           ),
         ),
       );
@@ -536,13 +613,16 @@ class _KampusLayarState extends ConsumerState<KampusLayar> {
 
   Widget _buildDaftarProdi(List<HasilProdi> list) {
     if (list.isEmpty) {
-      return const Center(
+      final butuhVerif = ref.read(pencarianGlobalProvider).butuhVerifikasi;
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Text(
-            'Program studi tidak ditemukan.',
+            butuhVerif
+                ? 'Memerlukan verifikasi CAPTCHA PDDikti.\nKetuk tombol "Verifikasi CAPTCHA" di atas untuk mencari Program Studi di aplikasi.'
+                : 'Program studi tidak ditemukan.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Warna.kapurRedup),
+            style: const TextStyle(color: Warna.kapurRedup, height: 1.4),
           ),
         ),
       );

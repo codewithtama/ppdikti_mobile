@@ -4,6 +4,7 @@ class DataSesiCloudflare {
   const DataSesiCloudflare({
     this.cookieHeader = '',
     this.userAgent = '',
+    this.recaptchaToken = '',
     this.terverifikasi = false,
     this.sedangMemintaVerifikasi = false,
     this.customBaseUrl,
@@ -11,15 +12,18 @@ class DataSesiCloudflare {
 
   final String cookieHeader;
   final String userAgent;
+  final String recaptchaToken;
   final bool terverifikasi;
   final bool sedangMemintaVerifikasi;
   final String? customBaseUrl;
 
-  bool get adaSesiValid => terverifikasi && cookieHeader.isNotEmpty;
+  bool get adaSesiValid =>
+      terverifikasi && (cookieHeader.isNotEmpty || recaptchaToken.isNotEmpty);
 
   DataSesiCloudflare copyWith({
     String? cookieHeader,
     String? userAgent,
+    String? recaptchaToken,
     bool? terverifikasi,
     bool? sedangMemintaVerifikasi,
     String? customBaseUrl,
@@ -27,8 +31,10 @@ class DataSesiCloudflare {
       DataSesiCloudflare(
         cookieHeader: cookieHeader ?? this.cookieHeader,
         userAgent: userAgent ?? this.userAgent,
+        recaptchaToken: recaptchaToken ?? this.recaptchaToken,
         terverifikasi: terverifikasi ?? this.terverifikasi,
-        sedangMemintaVerifikasi: sedangMemintaVerifikasi ?? this.sedangMemintaVerifikasi,
+        sedangMemintaVerifikasi:
+            sedangMemintaVerifikasi ?? this.sedangMemintaVerifikasi,
         customBaseUrl: customBaseUrl ?? this.customBaseUrl,
       );
 }
@@ -39,17 +45,37 @@ class SesiCloudflareNotifier extends StateNotifier<DataSesiCloudflare> {
   // Akses statis cepat untuk Interceptor Dio
   static String? cookiesAktif;
   static String? userAgentAktif;
+  static String? recaptchaTokenAktif;
   static String? baseUrlAktif;
 
-  void simpanSesi({required String cookies, required String userAgent}) {
-    cookiesAktif = cookies;
-    userAgentAktif = userAgent;
+  void simpanSesi({
+    required String cookies,
+    required String userAgent,
+    String? recaptchaToken,
+  }) {
+    final tokenBersih = recaptchaToken?.trim() ?? '';
+    cookiesAktif = cookies.trim().isNotEmpty ? cookies.trim() : null;
+    userAgentAktif = userAgent.trim().isNotEmpty ? userAgent.trim() : null;
+    if (tokenBersih.isNotEmpty) {
+      recaptchaTokenAktif = tokenBersih;
+    }
 
     state = state.copyWith(
-      cookieHeader: cookies,
-      userAgent: userAgent,
+      cookieHeader: cookies.trim(),
+      userAgent: userAgent.trim(),
+      recaptchaToken: tokenBersih.isNotEmpty ? tokenBersih : state.recaptchaToken,
       terverifikasi: true,
       sedangMemintaVerifikasi: false,
+    );
+  }
+
+  /// Dipanggil saat API kembali menolak 403 (mis. token reCAPTCHA kadaluarsa)
+  void tandaiKadaluarsa() {
+    recaptchaTokenAktif = null;
+    state = state.copyWith(
+      recaptchaToken: '',
+      terverifikasi: false,
+      sedangMemintaVerifikasi: true,
     );
   }
 
@@ -72,6 +98,7 @@ class SesiCloudflareNotifier extends StateNotifier<DataSesiCloudflare> {
   void reset() {
     cookiesAktif = null;
     userAgentAktif = null;
+    recaptchaTokenAktif = null;
     state = const DataSesiCloudflare();
   }
 }
@@ -80,4 +107,3 @@ final sesiCloudflareProvider =
     StateNotifierProvider<SesiCloudflareNotifier, DataSesiCloudflare>((ref) {
   return SesiCloudflareNotifier();
 });
-

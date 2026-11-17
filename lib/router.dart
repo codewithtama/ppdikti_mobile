@@ -5,6 +5,7 @@ import 'core/theme/tokens.dart';
 import 'data/model/pencarian_global.dart';
 import 'fitur/beranda/beranda_layar.dart';
 import 'fitur/beranda/peta/peta_penuh_layar.dart';
+import 'fitur/favorit/favorit_layar.dart';
 import 'fitur/kabar/kabar_layar.dart';
 import 'fitur/kampus/detail_layar.dart';
 import 'fitur/kampus/kampus_layar.dart';
@@ -130,6 +131,11 @@ GoRouter buatRouter({bool sudahSetuju = false}) {
         path: '/komparasi',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const KomparasiLayar(),
+      ),
+      GoRoute(
+        path: '/favorit',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const FavoritLayar(),
       ),
     ],
   );

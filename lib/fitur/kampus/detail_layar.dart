@@ -11,8 +11,10 @@ import '../../core/theme/tokens.dart';
 import '../../data/model/detail_kampus.dart';
 import '../../data/model/kelulusan.dart';
 import '../../data/repo/kampus_repo.dart';
+import '../../data/sumber/db_lokal.dart';
 import '../beranda/peta/grid_ketuk.dart';
 import '../beranda/peta/peta_painter.dart';
+import '../favorit/favorit_vm.dart';
 import '../komparasi/komparasi_vm.dart';
 import 'detail_vm.dart';
 import 'kampus_vm.dart';
@@ -128,11 +130,46 @@ class DetailKampusLayar extends ConsumerWidget {
     }
 
     final k = kampus.koordinat;
+    final favoritList = ref.watch(favoritProvider);
+    final sudahFavorit = favoritList.any(
+      (e) => e.id == kampus.kode && e.tipe == TipeFavorit.kampus,
+    );
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail Kampus'),
         actions: [
+          IconButton(
+            icon: Icon(
+              sudahFavorit
+                  ? PhosphorIconsFill.bookmarkSimple
+                  : PhosphorIconsRegular.bookmarkSimple,
+              color: sudahFavorit ? Warna.kunyit : Warna.kapur,
+            ),
+            tooltip: sudahFavorit ? 'Hapus dari Tersimpan' : 'Simpan Kampus',
+            onPressed: () async {
+              final ditambah =
+                  await ref.read(favoritProvider.notifier).toggleFavorit(
+                        ItemFavorit(
+                          id: kampus.kode,
+                          tipe: TipeFavorit.kampus,
+                          judul: kampus.nama,
+                          subjudul: '${kampus.kelompok} • ${kampus.kota ?? kampus.provinsi}',
+                          metaJson: {'kode': kampus.kode, 'nama': kampus.nama},
+                          createdAt: DateTime.now(),
+                        ),
+                      );
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(ditambah
+                      ? '${kampus.nama} disimpan ke Tersimpan'
+                      : '${kampus.nama} dihapus dari Tersimpan'),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            },
+          ),
           if (k != null)
             IconButton(
               icon: const Icon(PhosphorIconsRegular.navigationArrow),

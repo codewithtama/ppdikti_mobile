@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/theme/tokens.dart';
 import '../../data/model/pencarian_global.dart';
+import '../../data/sumber/db_lokal.dart';
+import '../favorit/favorit_vm.dart';
 import '../komparasi/komparasi_vm.dart';
 
 class DetailProdiLayar extends ConsumerWidget {
@@ -20,6 +22,9 @@ class DetailProdiLayar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final stateKomparasi = ref.watch(komparasiProvider);
     final sudahDipilih = stateKomparasi.apakahProdiAda(prodi.id);
+    final sudahFavorit = ref.watch(favoritProvider).any(
+          (e) => e.id == prodi.id && e.tipe == TipeFavorit.prodi,
+        );
 
     return Scaffold(
       backgroundColor: Warna.tinta,
@@ -33,6 +38,44 @@ class DetailProdiLayar extends ConsumerWidget {
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         actions: [
+          IconButton(
+            icon: Icon(
+              sudahFavorit
+                  ? PhosphorIconsFill.bookmarkSimple
+                  : PhosphorIconsRegular.bookmarkSimple,
+              color: sudahFavorit ? Warna.kunyit : Warna.kapur,
+            ),
+            tooltip: sudahFavorit ? 'Hapus dari Tersimpan' : 'Simpan Prodi',
+            onPressed: () async {
+              final ditambah =
+                  await ref.read(favoritProvider.notifier).toggleFavorit(
+                        ItemFavorit(
+                          id: prodi.id,
+                          tipe: TipeFavorit.prodi,
+                          judul: '${prodi.jenjang} ${prodi.nama}',
+                          subjudul: prodi.pt,
+                          metaJson: {
+                            'id': prodi.id,
+                            'nama': prodi.nama,
+                            'jenjang': prodi.jenjang,
+                            'pt': prodi.pt,
+                            'akreditasi': prodi.akreditasi,
+                            'status': prodi.status,
+                          },
+                          createdAt: DateTime.now(),
+                        ),
+                      );
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(ditambah
+                      ? '${prodi.nama} disimpan ke Tersimpan'
+                      : '${prodi.nama} dihapus dari Tersimpan'),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: Icon(
               sudahDipilih ? PhosphorIconsFill.checkCircle : PhosphorIconsRegular.scales,

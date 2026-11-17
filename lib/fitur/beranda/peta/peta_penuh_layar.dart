@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -10,6 +11,7 @@ import '../../../core/theme/tokens.dart';
 import '../../../data/model/kampus.dart';
 import '../../kampus/kampus_vm.dart';
 import 'grid_ketuk.dart';
+import 'kluster_peta.dart';
 import 'peta_painter.dart';
 
 enum TipeLapisanPeta {
@@ -42,6 +44,10 @@ class _PetaPenuhLayarState extends ConsumerState<PetaPenuhLayar>
   TipeLapisanPeta _tipeLapisan = TipeLapisanPeta.osmDark;
   Kampus? _kampusTerpilih;
   bool _sudahFokusAwal = false;
+  double _zoomSaatIni = _zoomIndonesia;
+  LatLngBounds? _boundsSaatIni;
+  LatLng? _lokasiSaya;
+  bool _sedangCariLokasi = false;
 
   // Koordinat default kepulauan Indonesia (Pusat geografis)
   static const LatLng _pusatIndonesia = LatLng(-2.5, 118.0);
@@ -117,6 +123,173 @@ class _PetaPenuhLayarState extends ConsumerState<PetaPenuhLayar>
     if (k != null) {
       final target = LatLng(k.lintang, k.bujur);
       _animasikanKeKoordinat(target, 15.5);
+    }
+  }
+
+  Future<void> _cariKampusTerdekat(List<Kampus> semuaKampus) async {
+    if (_sedangCariLokasi) return;
+    setState(() => _sedangCariLokasi = true);
+
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Layanan GPS perangkat sedang nonaktif.'),
+          ),
+        );
+        return;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Izin lokasi ditolak. Aktifkan di pengaturan aplikasi.'),
+          ),
+        );
+        return;
+      }
+
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 10),
+        ),
+      );
+      if (!mounted) return;
+
+      final titikSaya = LatLng(pos.latitude, pos.longitude);
+      setState(() => _lokasiSaya = titikSaya);
+
+      if (_tipeLapisan != TipeLapisanPeta.vektorLuring) {
+        _animasikanKeKoordinat(titikSaya, 13.0);
+      }
+
+      final terdekat = hitungKampusTerdekat(
+        daftarKampus: semuaKampus,
+        lat: pos.latitude,
+        lng: pos.longitude,
+        maks: 15,
+      );
+
+      if (!mounted || terdekat.isEmpty) return;
+
+      await showModalBottomSheet<void>(
+        context: context,
+        backgroundColor: Warna.tintaAngkat,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+        ),
+        builder: (sheetCtx) {
+          return SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+                  child: Row(
+                    children: [
+                      const Icon(PhosphorIconsFill.navigationArrow,
+                          color: Warna.kunyit, size: 18),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          '15 Kampus Terdekat dari Lokasimu',
+                          style: TextStyle(
+                            color: Warna.kapur,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(PhosphorIconsRegular.x,
+                            color: Warna.kapurRedup, size: 18),
+                        onPressed: () => Navigator.pop(sheetCtx),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, color: Warna.garis),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: terdekat.length,
+                    separatorBuilder: (_, _) =>
+                        const Divider(height: 1, color: Warna.garis),
+                    itemBuilder: (context, index) {
+                      final item = terdekat[index];
+                      final k = item.kampus;
+                      final jarakStr = item.jarakMeter < 1000
+                          ? '${item.jarakMeter.round()} m'
+                          : '${(item.jarakMeter / 1000).toStringAsFixed(1)} km';
+                      return ListTile(
+                        dense: true,
+                        title: Text(
+                          k.nama,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Warna.kapur,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        subtitle: Text(
+                          '${k.kelompok} • ${k.kota ?? k.provinsi}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Warna.kapurRedup,
+                            fontSize: 11,
+                          ),
+                        ),
+                        trailing: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Warna.tinta,
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Warna.kunyit, width: 0.8),
+                          ),
+                          child: Text(
+                            jarakStr,
+                            style: Gaya.angka.copyWith(
+                              color: Warna.kunyit,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(sheetCtx);
+                          _pilihKampus(k);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal mengambil lokasi GPS: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _sedangCariLokasi = false);
+      }
     }
   }
 
@@ -347,11 +520,21 @@ class _PetaPenuhLayarState extends ConsumerState<PetaPenuhLayar>
             Positioned.fill(
               child: FlutterMap(
                 mapController: _mapController,
-                options: const MapOptions(
+                options: MapOptions(
                   initialCenter: _pusatIndonesia,
                   initialZoom: _zoomIndonesia,
                   minZoom: 3.5,
                   maxZoom: 18.5,
+                  onPositionChanged: (camera, hasGesture) {
+                    if ((camera.zoom - _zoomSaatIni).abs() > 0.25 ||
+                        _boundsSaatIni == null ||
+                        hasGesture) {
+                      setState(() {
+                        _zoomSaatIni = camera.zoom;
+                        _boundsSaatIni = camera.visibleBounds;
+                      });
+                    }
+                  },
                 ),
                 children: [
                   // Lapisan Tile OSM (100% Bebas API Key & Tanpa Watermark)
@@ -363,27 +546,100 @@ class _PetaPenuhLayarState extends ConsumerState<PetaPenuhLayar>
                         : null,
                   ),
 
-                  // Lapisan Titik Kampus (Semua titik koordinat)
-                  CircleLayer(
-                    circles: semuaKampusBerkoordinat.map((k) {
-                      final c = k.koordinat!;
+                  // Lapisan Kluster Spasial Kampus (4.342 PT)
+                  MarkerLayer(
+                    markers: hitungKlusterPeta(
+                      daftarKampus: semuaKampusBerkoordinat,
+                      zoom: _zoomSaatIni,
+                      bounds: _boundsSaatIni,
+                    ).map((kluster) {
+                      if (kluster.apakahKluster) {
+                        return Marker(
+                          point: kluster.pusat,
+                          width: 38,
+                          height: 38,
+                          child: GestureDetector(
+                            onTap: () => _animasikanKeKoordinat(
+                              kluster.pusat,
+                              (_zoomSaatIni + 2.5).clamp(3.5, 16.0),
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Warna.kunyit,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Warna.tinta, width: 2),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                '${kluster.jumlah}',
+                                style: const TextStyle(
+                                  color: Warna.tinta,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      final k = kluster.utama;
                       final isSelected = _kampusTerpilih?.kode == k.kode;
-                      if (isSelected) return null;
-
-                      final isCocokFilter = hasil.adaFilter && hasil.kodeCocok.contains(k.kode);
-
-                      return CircleMarker(
-                        point: LatLng(c.lintang, c.bujur),
-                        radius: isCocokFilter ? 4.5 : 2.5,
-                        color: isCocokFilter
-                            ? Warna.kunyit
-                            : Warna.kapur.withValues(alpha: 0.40),
-                        borderStrokeWidth: isCocokFilter ? 1.0 : 0.0,
-                        borderColor: Warna.tinta,
-                        useRadiusInMeter: false,
+                      if (isSelected) {
+                        return const Marker(
+                          point: LatLng(0, 0),
+                          width: 0,
+                          height: 0,
+                          child: SizedBox.shrink(),
+                        );
+                      }
+                      final isCocokFilter =
+                          hasil.adaFilter && hasil.kodeCocok.contains(k.kode);
+                      return Marker(
+                        point: kluster.pusat,
+                        width: 24,
+                        height: 24,
+                        child: GestureDetector(
+                          onTap: () => _pilihKampus(k),
+                          child: Center(
+                            child: Container(
+                              width: isCocokFilter ? 13 : 10,
+                              height: isCocokFilter ? 13 : 10,
+                              decoration: BoxDecoration(
+                                color: isCocokFilter
+                                    ? Warna.kunyit
+                                    : Warna.laut,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Warna.tinta,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       );
-                    }).whereType<CircleMarker>().toList(),
+                    }).toList(),
                   ),
+
+                  // Penanda lokasi pengguna saat ini (GPS)
+                  if (_lokasiSaya != null)
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: _lokasiSaya!,
+                          width: 22,
+                          height: 22,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3B82F6),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
 
                   // Lapisan Marker Interaktif untuk Kampus Terpilih (Google Maps Beacon Style)
                   if (_kampusTerpilih?.koordinat != null)
@@ -439,7 +695,7 @@ class _PetaPenuhLayarState extends ConsumerState<PetaPenuhLayar>
                 ),
                 const SizedBox(height: 8),
                 _bangunTombolKontrol(
-                  icon: PhosphorIconsRegular.crosshair,
+                  icon: PhosphorIconsRegular.globeHemisphereEast,
                   tooltip: 'Lihat Seluruh Indonesia',
                   onTap: () {
                     if (_tipeLapisan == TipeLapisanPeta.vektorLuring) {
@@ -448,6 +704,14 @@ class _PetaPenuhLayarState extends ConsumerState<PetaPenuhLayar>
                       _animasikanKeKoordinat(_pusatIndonesia, _zoomIndonesia);
                     }
                   },
+                ),
+                const SizedBox(height: 8),
+                _bangunTombolKontrol(
+                  icon: _sedangCariLokasi
+                      ? PhosphorIconsRegular.spinnerGap
+                      : PhosphorIconsRegular.navigationArrow,
+                  tooltip: 'Kampus Terdekat (GPS)',
+                  onTap: () => _cariKampusTerdekat(semuaKampusBerkoordinat),
                 ),
               ],
             ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/net/galat.dart';
+import '../../core/net/sesi_cloudflare.dart';
 import '../../data/model/pencarian_global.dart';
 import '../../data/repo/pencarian_repo.dart';
 import '../kampus/kampus_vm.dart';
@@ -58,9 +59,11 @@ class StatePencarianGlobal {
 }
 
 class PencarianGlobalNotifier extends StateNotifier<StatePencarianGlobal> {
-  PencarianGlobalNotifier(this._repo) : super(const StatePencarianGlobal());
+  PencarianGlobalNotifier(this._repo, {this.onButuhVerifikasi})
+      : super(const StatePencarianGlobal());
 
   final PencarianRepo _repo;
+  final void Function()? onButuhVerifikasi;
   Timer? _debounceTimer;
 
   void aturKategori(KategoriPencarian kat) {
@@ -104,14 +107,15 @@ class PencarianGlobalNotifier extends StateNotifier<StatePencarianGlobal> {
           pesanGalat: null,
         );
       }
-    } on ButuhVerifikasiCloudflare {
-      final hasilLuring = await _repo.cariLuringHanya(kataKunci);
+    } on ButuhVerifikasiCloudflare catch (e) {
+      onButuhVerifikasi?.call();
+      final hasilLokal = await _repo.cariKampusLokal(kataKunci);
       if (state.query.trim() == kataKunci) {
         state = state.copyWith(
-          hasil: hasilLuring,
+          hasil: hasilLokal,
           sedangMemuat: false,
           butuhVerifikasi: true,
-          pesanGalat: null,
+          pesanGalat: e.pesan,
         );
       }
     } catch (_) {
@@ -136,5 +140,9 @@ class PencarianGlobalNotifier extends StateNotifier<StatePencarianGlobal> {
 final pencarianGlobalProvider =
     StateNotifierProvider<PencarianGlobalNotifier, StatePencarianGlobal>((ref) {
   final repo = ref.watch(pencarianRepoProvider);
-  return PencarianGlobalNotifier(repo);
+  return PencarianGlobalNotifier(
+    repo,
+    onButuhVerifikasi: () =>
+        ref.read(sesiCloudflareProvider.notifier).tandaiKadaluarsa(),
+  );
 });

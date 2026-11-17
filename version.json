@@ -1,14 +1,14 @@
 {
-  "version": "1.1.0",
-  "build_number": 11,
-  "release_date": "2026-11-02",
+  "version": "1.2.0",
+  "build_number": 12,
+  "release_date": "2026-11-17",
   "changelog": [
-    "Fitur Komparasi Kampus & Prodi Berdampingan: Bandingkan hingga 3 perguruan tinggi atau program studi sekaligus dalam matriks akreditasi, rasio dosen-mahasiswa, biaya kuliah, dan wilayah",
-    "Bar Komparasi Melayang Interaktif: Tambah atau hapus pilihan komparasi langsung dari kartu direktori dan detail prodi",
-    "Fitur Kartu Identitas Digital Mahasiswa & Dosen: Kartu digital resmi berstandar CR80 berkop Kemdiktisaintek PDDikti dengan QR Code verifikasi langsung",
-    "Dukungan Balik Kartu & Simpan/Bagikan Gambar PNG Ultra HD ke WhatsApp dan media sosial"
+    "Perbaikan Pencarian & Suntikan Sesi CAPTCHA ke Dio: Deteksi akurat 403 reCAPTCHA, suntikan Cookie/User-Agent/X-Recaptcha-Token otomatis, dan pencarian 4.342 kampus lokal tetap instan",
+    "Grafik Analitik & Radar Komparasi (fl_chart): Donut Chart akreditasi & Bar Chart jenis PT di Beranda, serta Radar Chart 4 sumbu pada Komparasi Kampus",
+    "Peta Kluster 4.342 Kampus & Kampus Terdekat GPS (geolocator): Kluster adaptif per level zoom dan daftar 15 kampus terdekat dari lokasi Anda",
+    "Bookmark Favorit & Riwayat Pencarian Luring (sqflite): Simpan Kampus, Prodi, Mahasiswa, dan Dosen untuk akses offline serta riwayat pencarian cepat"
   ],
-  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.1.0/app-release.apk",
-  "sha256": "4d45dd5e49fba74eceddfb4a476cdd4a6ff6e148b99e05ea7427493d3a4da448",
+  "download_url": "https://github.com/codewithtama/ppdikti_mobile/releases/download/v1.2.0/app-release.apk",
+  "sha256": "643e28e9e40f3516153c993d19c28ecd855907c3ed30c84a749027a8a523d7c5",
   "force_update": false
 }

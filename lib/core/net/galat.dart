@@ -46,6 +46,7 @@ final class ButuhVerifikasiCloudflare extends Galat {
   const ButuhVerifikasiCloudflare();
 
   @override
-  String get pesan => 'Server PDDikti meminta verifikasi keamanan Cloudflare.';
+  String get pesan =>
+      'Server PDDikti meminta verifikasi keamanan (reCAPTCHA / Cloudflare).';
 }
 

@@ -1,11 +1,26 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'galat.dart';
+import 'sesi_cloudflare.dart';
 
 const String defaultPddiktiBaseUrl = String.fromEnvironment(
   'PDDIKTI_BASE_URL',
   defaultValue: 'https://api-pddikti.kemdiktisaintek.go.id',
 );
+
+/// Mengecek apakah respons HTTP 403 berasal dari proteksi reCAPTCHA atau Cloudflare
+bool adalahGalatVerifikasi(Response<dynamic>? response) {
+  if (response == null || response.statusCode != 403) return false;
+  final data = response.data;
+  final text = data is Map
+      ? '${data['message'] ?? ''} ${data['error'] ?? ''} $data'.toLowerCase()
+      : (data?.toString() ?? '').toLowerCase();
+  return text.contains('recaptcha') ||
+      text.contains('cloudflare') ||
+      text.contains('cf-ray') ||
+      text.contains('turnstile') ||
+      text.contains('challenge');
+}
 
 Dio buatDioKlien({String? baseUrl}) {
   final dio = Dio(
@@ -32,6 +47,29 @@ Dio buatDioKlien({String? baseUrl}) {
 
   dio.interceptors.add(
     InterceptorsWrapper(
+      onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
+        final customBase = SesiCloudflareNotifier.baseUrlAktif;
+        if (baseUrl == null && customBase != null && customBase.isNotEmpty) {
+          options.baseUrl = customBase;
+        }
+
+        final cookies = SesiCloudflareNotifier.cookiesAktif;
+        if (cookies != null && cookies.isNotEmpty) {
+          options.headers['Cookie'] = cookies;
+        }
+
+        final ua = SesiCloudflareNotifier.userAgentAktif;
+        if (ua != null && ua.isNotEmpty) {
+          options.headers['User-Agent'] = ua;
+        }
+
+        final recaptchaToken = SesiCloudflareNotifier.recaptchaTokenAktif;
+        if (recaptchaToken != null && recaptchaToken.isNotEmpty) {
+          options.headers['X-Recaptcha-Token'] = recaptchaToken;
+        }
+
+        return handler.next(options);
+      },
       onError: (DioException err, ErrorInterceptorHandler handler) async {
         final requestOptions = err.requestOptions;
         int retries = (requestOptions.extra['retries'] as int?) ?? 0;
@@ -79,6 +117,9 @@ Galat petakanDioError(dynamic error) {
     if (error.type == DioExceptionType.connectionError ||
         error.error is SocketException) {
       return const TanpaJaringan();
+    }
+    if (adalahGalatVerifikasi(error.response)) {
+      return const ButuhVerifikasiCloudflare();
     }
     final status = error.response?.statusCode;
     if (status != null) {

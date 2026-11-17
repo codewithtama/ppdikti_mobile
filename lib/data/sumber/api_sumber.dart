@@ -218,27 +218,48 @@ class ApiSumber {
 
     try {
       final encoded = Uri.encodeComponent(kataKunci);
+      var terblokirVerifikasi = false;
+
+      Future<Response<dynamic>> panggilAman(String path) async {
+        try {
+          return await _dio.get<dynamic>(path);
+        } on DioException catch (e) {
+          if (adalahGalatVerifikasi(e.response) ||
+              e.response?.statusCode == 403) {
+            terblokirVerifikasi = true;
+          }
+          return Response<dynamic>(
+            requestOptions: RequestOptions(path: path),
+            data: <String, dynamic>{'data': <dynamic>[]},
+          );
+        } catch (_) {
+          return Response<dynamic>(
+            requestOptions: RequestOptions(path: path),
+            data: <String, dynamic>{'data': <dynamic>[]},
+          );
+        }
+      }
 
       // Panggil 4 endpoint pencarian secara paralel via Future.wait
       final responses = await Future.wait([
-        _dio.get<dynamic>('/pencarian/mhs/$encoded').catchError(
-              (_) => Response<dynamic>(requestOptions: RequestOptions(), data: <String, dynamic>{'data': <dynamic>[]}),
-            ),
-        _dio.get<dynamic>('/pencarian/dosen/$encoded').catchError(
-              (_) => Response<dynamic>(requestOptions: RequestOptions(), data: <String, dynamic>{'data': <dynamic>[]}),
-            ),
-        _dio.get<dynamic>('/pencarian/prodi/$encoded').catchError(
-              (_) => Response<dynamic>(requestOptions: RequestOptions(), data: <String, dynamic>{'data': <dynamic>[]}),
-            ),
-        _dio.get<dynamic>('/pencarian/pt/$encoded').catchError(
-              (_) => Response<dynamic>(requestOptions: RequestOptions(), data: <String, dynamic>{'data': <dynamic>[]}),
-            ),
+        panggilAman('/pencarian/mhs/$encoded'),
+        panggilAman('/pencarian/dosen/$encoded'),
+        panggilAman('/pencarian/prodi/$encoded'),
+        panggilAman('/pencarian/pt/$encoded'),
       ]);
 
       final rawMhs = _ambilList(responses[0].data);
       final rawDsn = _ambilList(responses[1].data);
       final rawPrd = _ambilList(responses[2].data);
       final rawPt = _ambilList(responses[3].data);
+
+      if (terblokirVerifikasi &&
+          rawMhs.isEmpty &&
+          rawDsn.isEmpty &&
+          rawPrd.isEmpty &&
+          rawPt.isEmpty) {
+        throw const ButuhVerifikasiCloudflare();
+      }
 
       final mhs = rawMhs.whereType<Map<String, dynamic>>().map(HasilMahasiswa.fromJson).toList();
       final dsn = rawDsn.whereType<Map<String, dynamic>>().map(HasilDosen.fromJson).toList();

@@ -11,9 +11,11 @@ import '../../core/ota/sheet_pembaruan.dart';
 import '../../core/theme/tokens.dart';
 import '../kampus/kampus_vm.dart';
 import '../komparasi/komparasi_vm.dart';
+import '../favorit/favorit_vm.dart';
 import '../pencarian/pencarian_vm.dart';
 import 'beranda_vm.dart';
 import 'bidang_ilmu_tabel.dart';
+import 'grafik_distribusi_kampus.dart';
 import 'ledger.dart';
 import 'peta/peta_tertanam.dart';
 
@@ -86,6 +88,17 @@ class _BerandaLayarState extends ConsumerState<BerandaLayar> {
                 );
               },
             ),
+          IconButton(
+            icon: Badge(
+              isLabelVisible: ref.watch(favoritProvider).isNotEmpty,
+              label: Text('${ref.watch(favoritProvider).length}'),
+              backgroundColor: Warna.laut,
+              textColor: Warna.tinta,
+              child: const Icon(PhosphorIconsRegular.bookmarkSimple, size: 22),
+            ),
+            tooltip: 'Tersimpan & Favorit',
+            onPressed: () => context.push('/favorit'),
+          ),
           IconButton(
             icon: Badge(
               isLabelVisible: ref.watch(komparasiProvider).totalSemuaItem > 0,
@@ -214,7 +227,11 @@ class _BerandaLayarState extends ConsumerState<BerandaLayar> {
                         '${FormatAngka.ribuan(titikBisaDigambar)} dari ${FormatAngka.ribuan(totalKampus)} kampus di daftar punya koordinat yang bisa digambar.',
                         style: Gaya.catatan,
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
+
+                      // Grafik Analitik Perguruan Tinggi (fl_chart)
+                      GrafikDistribusiKampus(daftarKampus: dataKampus.daftarKampus),
+                      const SizedBox(height: 20),
 
                       // Ledger Statistik Beranda
                       berandaAsync.when(

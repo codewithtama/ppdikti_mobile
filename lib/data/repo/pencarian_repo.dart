@@ -55,6 +55,31 @@ class PencarianRepo {
     return _cariLuring(q);
   }
 
+  /// Pencarian khusus direktori 4.342 kampus lokal tanpa data contoh fiktif
+  Future<HasilPencarianGlobal> cariKampusLokal(String keyword) async {
+    final q = keyword.trim().toLowerCase();
+    if (q.isEmpty) return const HasilPencarianGlobal();
+
+    final listPt = <Kampus>[];
+    try {
+      final dataKampus = await _kampusRepo.muatDataKampus();
+      for (final kampus in dataKampus.daftarKampus) {
+        final nama = kampus.nama.toLowerCase();
+        final kode = kampus.kode.toLowerCase();
+        final kota = (kampus.kota ?? '').toLowerCase();
+        if (nama.contains(q) || kode.contains(q) || kota.contains(q)) {
+          listPt.add(kampus);
+          if (listPt.length >= 25) break;
+        }
+      }
+    } catch (_) {}
+
+    return HasilPencarianGlobal(
+      pt: listPt,
+      dariCache: true,
+    );
+  }
+
   Future<HasilPencarianGlobal> _cariLuring(String query) async {
     final sample = await _muatSamplePencarian();
 

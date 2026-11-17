@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -26,14 +27,68 @@ class VerifikasiCloudflareSheet extends ConsumerStatefulWidget {
   }
 
   @override
-  ConsumerState<VerifikasiCloudflareSheet> createState() => _VerifikasiCloudflareSheetState();
+  ConsumerState<VerifikasiCloudflareSheet> createState() =>
+      _VerifikasiCloudflareSheetState();
 }
 
-class _VerifikasiCloudflareSheetState extends ConsumerState<VerifikasiCloudflareSheet> {
+class _VerifikasiCloudflareSheetState
+    extends ConsumerState<VerifikasiCloudflareSheet> {
   late final WebViewController _controller;
   bool _sedangMemuat = true;
+  bool _sudahSelesai = false;
   String _statusPesan = 'Menghubungkan ke PDDikti...';
   Timer? _pollingTimer;
+
+  static const String _uaMobile =
+      'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36';
+
+  static const String _jsHookVerifikasi = '''
+(function() {
+  if (window.__pddiktiHookInstalled) return;
+  window.__pddiktiHookInstalled = true;
+
+  function kirimToken(token) {
+    if (!token || typeof token !== 'string' || !token.trim()) return;
+    try {
+      PddiktiVerifikasi.postMessage(JSON.stringify({
+        recaptchaToken: token.trim(),
+        cookies: document.cookie || '',
+        userAgent: navigator.userAgent || ''
+      }));
+    } catch (_) {}
+  }
+
+  // Tangkap X-Recaptcha-Token dari fetch resmi jika ada
+  var origFetch = window.fetch;
+  if (origFetch) {
+    window.fetch = function(input, init) {
+      try {
+        if (init && init.headers) {
+          var h = init.headers;
+          var t = (typeof h.get === 'function')
+            ? (h.get('X-Recaptcha-Token') || h.get('x-recaptcha-token'))
+            : (h['X-Recaptcha-Token'] || h['x-recaptcha-token']);
+          if (t) kirimToken(t);
+        }
+      } catch (_) {}
+      return origFetch.apply(this, arguments);
+    };
+  }
+
+  // Tangkap X-Recaptcha-Token dari XMLHttpRequest resmi jika ada
+  var origSetHeader = XMLHttpRequest.prototype.setRequestHeader;
+  if (origSetHeader) {
+    XMLHttpRequest.prototype.setRequestHeader = function(name, value) {
+      try {
+        if (name && name.toLowerCase() === 'x-recaptcha-token' && value) {
+          kirimToken(value);
+        }
+      } catch (_) {}
+      return origSetHeader.apply(this, arguments);
+    };
+  }
+})();
+''';
 
   @override
   void initState() {
@@ -45,8 +100,12 @@ class _VerifikasiCloudflareSheetState extends ConsumerState<VerifikasiCloudflare
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Warna.tinta)
-      ..setUserAgent(
-        'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36',
+      ..setUserAgent(_uaMobile)
+      ..addJavaScriptChannel(
+        'PddiktiVerifikasi',
+        onMessageReceived: (JavaScriptMessage message) {
+          _prosesPesanJs(message.message);
+        },
       )
       ..setNavigationDelegate(
         NavigationDelegate(
@@ -62,10 +121,14 @@ class _VerifikasiCloudflareSheetState extends ConsumerState<VerifikasiCloudflare
             if (mounted) {
               setState(() {
                 _sedangMemuat = false;
-                _statusPesan = 'Silakan centang verifikasi di bawah jika muncul';
+                _statusPesan =
+                    'Silakan selesaikan verifikasi CAPTCHA di bawah ini';
               });
             }
-            await _periksaDanAmbilCookie();
+            try {
+              await _controller.runJavaScript(_jsHookVerifikasi);
+            } catch (_) {}
+            await _periksaDanAmbilSesi();
           },
           onWebResourceError: (error) {
             if (mounted) {
@@ -78,47 +141,107 @@ class _VerifikasiCloudflareSheetState extends ConsumerState<VerifikasiCloudflare
       )
       ..loadRequest(Uri.parse(widget.urlUji));
 
-    // Polling setiap 1,5 detik untuk mengecek apakah cf_clearance sudah didapat
+    // Polling setiap 1,5 detik untuk mengecek apakah user sudah menyelesaikan reCAPTCHA / Cloudflare
     _pollingTimer = Timer.periodic(const Duration(milliseconds: 1500), (_) {
-      _periksaDanAmbilCookie();
+      _periksaDanAmbilSesi();
     });
   }
 
-  Future<void> _periksaDanAmbilCookie() async {
+  void _prosesPesanJs(String raw) {
+    if (_sudahSelesai) return;
     try {
-      final cookieObj = await _controller.runJavaScriptReturningResult('document.cookie');
-      final cookieStr = cookieObj.toString().replaceAll('"', '').trim();
-
-      final uaObj = await _controller.runJavaScriptReturningResult('navigator.userAgent');
-      final uaStr = uaObj.toString().replaceAll('"', '').trim();
-
-      final titleObj = await _controller.runJavaScriptReturningResult('document.title');
-      final titleStr = titleObj.toString().replaceAll('"', '').trim();
-
-      // Jika cf_clearance atau cookie pddikti sudah ada, atau judul bukan lagi verifikasi
-      if (cookieStr.contains('cf_clearance') ||
-          (cookieStr.isNotEmpty && !titleStr.toLowerCase().contains('verifikasi'))) {
-        _pollingTimer?.cancel();
-
-        ref.read(sesiCloudflareProvider.notifier).simpanSesi(
-              cookies: cookieStr,
-              userAgent: uaStr.isNotEmpty
-                  ? uaStr
-                  : 'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36',
-            );
-
-        if (mounted) {
-          Navigator.of(context).pop(true);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Verifikasi berhasil! Sesi aktif tersimpan.'),
-              backgroundColor: Warna.laut,
-              duration: Duration(seconds: 3),
-            ),
+      final decoded = jsonDecode(raw);
+      if (decoded is Map<String, dynamic>) {
+        final token = (decoded['recaptchaToken'] ?? '').toString().trim();
+        final cookies = (decoded['cookies'] ?? '').toString().trim();
+        final ua = (decoded['userAgent'] ?? '').toString().trim();
+        if (token.isNotEmpty) {
+          _selesaikanVerifikasi(
+            cookies: cookies,
+            userAgent: ua,
+            recaptchaToken: token,
           );
         }
       }
     } catch (_) {}
+  }
+
+  Future<void> _periksaDanAmbilSesi({bool manual = false}) async {
+    if (_sudahSelesai) return;
+    try {
+      final hasilObj = await _controller.runJavaScriptReturningResult('''
+        (function() {
+          var token = '';
+          try {
+            if (window.grecaptcha && typeof window.grecaptcha.getResponse === 'function') {
+              token = window.grecaptcha.getResponse() || '';
+            }
+          } catch (_) {}
+          if (!token) {
+            try {
+              var ta = document.querySelector('textarea[name="g-recaptcha-response"]');
+              if (ta && ta.value) token = ta.value;
+            } catch (_) {}
+          }
+          return JSON.stringify({
+            recaptchaToken: token,
+            cookies: document.cookie || '',
+            userAgent: navigator.userAgent || ''
+          });
+        })();
+      ''');
+
+      var raw = hasilObj.toString().trim();
+      if (raw.startsWith('"') && raw.endsWith('"')) {
+        raw = jsonDecode(raw).toString();
+      }
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map<String, dynamic>) return;
+
+      final token = (decoded['recaptchaToken'] ?? '').toString().trim();
+      final cookies = (decoded['cookies'] ?? '').toString().trim();
+      final ua = (decoded['userAgent'] ?? '').toString().trim();
+
+      if (token.isNotEmpty || cookies.contains('cf_clearance')) {
+        _selesaikanVerifikasi(
+          cookies: cookies,
+          userAgent: ua,
+          recaptchaToken: token,
+        );
+      } else if (manual && mounted) {
+        setState(() {
+          _statusPesan =
+              'CAPTCHA belum terverifikasi. Silakan centang / selesaikan verifikasi di halaman.';
+        });
+      }
+    } catch (_) {}
+  }
+
+  void _selesaikanVerifikasi({
+    required String cookies,
+    required String userAgent,
+    String? recaptchaToken,
+  }) {
+    if (_sudahSelesai) return;
+    _sudahSelesai = true;
+    _pollingTimer?.cancel();
+
+    ref.read(sesiCloudflareProvider.notifier).simpanSesi(
+          cookies: cookies,
+          userAgent: userAgent.isNotEmpty ? userAgent : _uaMobile,
+          recaptchaToken: recaptchaToken,
+        );
+
+    if (mounted) {
+      Navigator.of(context).pop(true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Verifikasi berhasil! Melanjutkan pencarian di aplikasi.'),
+          backgroundColor: Warna.laut,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   @override
@@ -151,7 +274,8 @@ class _VerifikasiCloudflareSheetState extends ConsumerState<VerifikasiCloudflare
             ),
             child: Row(
               children: [
-                const Icon(PhosphorIconsRegular.shieldCheck, size: 20, color: Warna.kunyit),
+                const Icon(PhosphorIconsRegular.shieldCheck,
+                    size: 20, color: Warna.kunyit),
                 const SizedBox(width: 8),
                 const Expanded(
                   child: Column(
@@ -166,14 +290,15 @@ class _VerifikasiCloudflareSheetState extends ConsumerState<VerifikasiCloudflare
                         ),
                       ),
                       Text(
-                        'Selesaikan verifikasi bot resmi Cloudflare 1x untuk membuka pencarian langsung.',
+                        'Selesaikan verifikasi CAPTCHA di bawah untuk melanjutkan pencarian di aplikasi.',
                         style: TextStyle(color: Warna.kapurRedup, fontSize: 11),
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(PhosphorIconsRegular.x, size: 18, color: Warna.kapurRedup),
+                  icon: const Icon(PhosphorIconsRegular.x,
+                      size: 18, color: Warna.kapurRedup),
                   onPressed: () => Navigator.of(context).pop(false),
                 ),
               ],
@@ -215,17 +340,22 @@ class _VerifikasiCloudflareSheetState extends ConsumerState<VerifikasiCloudflare
               children: [
                 TextButton.icon(
                   onPressed: () => _controller.reload(),
-                  icon: const Icon(PhosphorIconsRegular.arrowsClockwise, size: 16, color: Warna.kunyit),
-                  label: const Text('Muat Ulang Halaman', style: TextStyle(color: Warna.kunyit, fontSize: 12)),
+                  icon: const Icon(PhosphorIconsRegular.arrowsClockwise,
+                      size: 16, color: Warna.kunyit),
+                  label: const Text('Muat Ulang Halaman',
+                      style: TextStyle(color: Warna.kunyit, fontSize: 12)),
                 ),
                 ElevatedButton(
-                  onPressed: () => _periksaDanAmbilCookie(),
+                  onPressed: () => _periksaDanAmbilSesi(manual: true),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Warna.kunyit,
                     foregroundColor: Warna.tinta,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   ),
-                  child: const Text('Cek Selesai', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                  child: const Text('Cek Selesai',
+                      style:
+                          TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
                 ),
               ],
             ),
@@ -235,4 +365,3 @@ class _VerifikasiCloudflareSheetState extends ConsumerState<VerifikasiCloudflare
     );
   }
 }
-

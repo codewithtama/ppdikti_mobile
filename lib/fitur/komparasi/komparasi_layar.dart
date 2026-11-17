@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/theme/tokens.dart';
 import '../kampus/logo_kampus.dart';
 import 'dialog_pilih_komparasi.dart';
+import 'grafik_komparasi_widget.dart';
 import 'komparasi_model.dart';
 import 'komparasi_vm.dart';
 
@@ -236,6 +237,10 @@ class _KomparasiLayarState extends ConsumerState<KomparasiLayar> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (kolomList.length >= 2) ...[
+            GrafikKomparasiWidget(daftarKampus: kolomList),
+            const SizedBox(height: 12),
+          ],
           // Kartu Header Kolom Kampus
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,

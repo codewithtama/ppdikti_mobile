@@ -4,6 +4,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/format/status_akademik.dart';
 import '../../core/theme/tokens.dart';
 import '../../data/model/pencarian_global.dart';
+import '../../data/sumber/db_lokal.dart';
+import '../favorit/favorit_vm.dart';
 import '../kartu_digital/kartu_digital_sheet.dart';
 import 'bagikan_profil_sheet.dart';
 import 'pencarian_vm.dart';
@@ -36,6 +38,10 @@ class _DetailDosenLayarState extends ConsumerState<DetailDosenLayar> {
 
   @override
   Widget build(BuildContext context) {
+    final sudahFavorit = ref.watch(favoritProvider).any(
+          (e) => e.id == widget.id && e.tipe == TipeFavorit.dosen,
+        );
+
     return Scaffold(
       backgroundColor: Warna.tinta,
       appBar: AppBar(
@@ -48,6 +54,50 @@ class _DetailDosenLayarState extends ConsumerState<DetailDosenLayar> {
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         actions: [
+          IconButton(
+            icon: Icon(
+              sudahFavorit
+                  ? PhosphorIconsFill.bookmarkSimple
+                  : PhosphorIconsRegular.bookmarkSimple,
+              color: sudahFavorit ? Warna.kunyit : Warna.kapur,
+            ),
+            tooltip: sudahFavorit ? 'Hapus dari Tersimpan' : 'Simpan Dosen',
+            onPressed: () async {
+              final d = await _futureDetail;
+              final r = d?.ringkasan ?? widget.ringkasan;
+              if (r == null) return;
+              final ditambah =
+                  await ref.read(favoritProvider.notifier).toggleFavorit(
+                        ItemFavorit(
+                          id: widget.id,
+                          tipe: TipeFavorit.dosen,
+                          judul: r.nama,
+                          subjudul: '${r.nidn} • ${r.namaPt}',
+                          metaJson: {
+                            'id': r.id,
+                            'nama': r.nama,
+                            'nidn': r.nidn,
+                            'nama_pt': r.namaPt,
+                            'singkatan_pt': r.singkatanPt,
+                            'nama_prodi': r.namaProdi,
+                            'status': r.status,
+                            'jabatan_akademik': r.jabatanAkademik,
+                            'pendidikan_tertinggi': r.pendidikanTertinggi,
+                          },
+                          createdAt: DateTime.now(),
+                        ),
+                      );
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(ditambah
+                      ? '${r.nama} disimpan ke Tersimpan'
+                      : '${r.nama} dihapus dari Tersimpan'),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(PhosphorIconsRegular.identificationCard),
             tooltip: 'Kartu Identitas Digital Dosen',
