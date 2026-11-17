@@ -15,7 +15,7 @@ void main() {
       final container = ProviderContainer();
       final notifier = container.read(komparasiProvider.notifier);
 
-      final k1 = Kampus(
+      const k1 = Kampus(
         kode: '001001',
         nama: 'Institut Teknologi Bandung',
         kelompok: 'PTN',
@@ -23,7 +23,7 @@ void main() {
         idSp: 'id1',
         akreditasi: 'Unggul',
       );
-      final k2 = Kampus(
+      const k2 = Kampus(
         kode: '001002',
         nama: 'Universitas Indonesia',
         kelompok: 'PTN',
@@ -31,7 +31,7 @@ void main() {
         idSp: 'id2',
         akreditasi: 'Unggul',
       );
-      final k3 = Kampus(
+      const k3 = Kampus(
         kode: '001003',
         nama: 'Universitas Gadjah Mada',
         kelompok: 'PTN',
@@ -39,7 +39,7 @@ void main() {
         idSp: 'id3',
         akreditasi: 'Unggul',
       );
-      final k4 = Kampus(
+      const k4 = Kampus(
         kode: '001004',
         nama: 'Institut Teknologi Sepuluh Nopember',
         kelompok: 'PTN',
